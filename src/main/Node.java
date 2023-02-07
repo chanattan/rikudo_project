@@ -103,6 +103,26 @@ public class Node {
 		return this.isFixed;
 	}
 
+	public static DIR getDirection(int i){
+		switch(i){
+			case 0:
+				return NE;
+			case 1:
+				return E;
+			case 2:
+				return SE;
+			case 3:
+				return SW;
+			case 4:
+				return W;
+			case 5:
+				return NW;
+			default:
+				System.err.println("Unknown direction");
+				return -1;
+		}
+	}
+
 	// Setters
 
 	public void setNeighbor(Node neigh, DIR d){
