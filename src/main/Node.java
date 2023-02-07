@@ -28,6 +28,8 @@ public class Node {
 	public Node(int label, boolean isFixed){
 		this.label = label;
 		this.isFixed = isFixed;
+		this.neigh = new Node[] {null,null,null,null,null,null};
+		this.diamonds = new DIR[] {null, null};
 	}
 
 	public Node(int label, boolean isFixed, Node neigh[], DIR diamonds[]){
