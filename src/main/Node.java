@@ -7,7 +7,8 @@ public class Node {
 		SE, SOUTH_EAST,
 		SW, SOUTH_WEST,
 		W, WEST,
-		NW, NORTH_WEST
+		NW, NORTH_WEST,
+		ERR
 	}
 	
 	private int label; 				// Number of the node
@@ -29,6 +30,13 @@ public class Node {
 		this.isFixed = isFixed;
 		this.neigh = neigh;
 		this.diamonds = diamonds;
+	}
+
+
+	// Link Node 1 and 2 on a direction (node n1's direction toward n2) (ex left : n1, right : n2, d = EAST)
+	public static void linkNodes(Node n1, Node n2, DIR d){
+		n1.setNeighbor(n2, d);
+		n2.setNeighbor(n1, oppositeDirection(d));
 	}
 
 
@@ -71,7 +79,7 @@ public class Node {
 
 	// ********************* PRIVATE FUNCTIONS *********************
 
-	private int dirToIndex(DIR d){
+	private static int dirToIndex(DIR d){
 		switch(d){
 			case NE: case NORTH_EAST:
 				return 0;
@@ -88,6 +96,38 @@ public class Node {
 			default:
 				System.err.println("Unknown direction");
 				return -1;
+		}
+	}
+
+	private static DIR oppositeDirection(DIR d){
+		switch(d){
+			case NE:
+				return DIR.SW; 
+			case NORTH_EAST:
+				return DIR.SOUTH_WEST;
+			case E: 
+				return DIR.W;
+			case EAST:
+				return DIR.WEST;
+			case SE: 
+				return DIR.NW;
+			case SOUTH_EAST:
+				return DIR.NORTH_WEST;
+			case SW: 
+				return DIR.NE;
+			case SOUTH_WEST:
+				return DIR.NORTH_EAST;
+			case W: 
+				return DIR.E;
+			case WEST:
+				return DIR.EAST;
+			case NW: 
+				return DIR.SE;
+			case NORTH_WEST:
+				return DIR.SOUTH_EAST;
+			default:
+				System.err.println("Unknown direction");
+				return DIR.ERR;
 		}
 	}
 
