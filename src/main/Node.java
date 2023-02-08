@@ -11,7 +11,7 @@ public class Node {
 	}
 	
 	private int label; 				// Number of the node
-	private final boolean isFixed;	// Constraint for the given problem 
+	private boolean isFixed;	// Constraint for the given problem 
 
 	private Node neigh[];		// Neighboring nodes (a size 6 array with other nodes)
 	private DIR diamonds[];		// The diamonds (a size 2 array with directions of diamonds)	
@@ -164,6 +164,10 @@ public class Node {
 
 	public void setLabel(int l){
 		this.label = l;
+	}
+
+	public void setIsFixed(boolean f){
+		this.isFixed = f;
 	}
 
 	// ********************* PRIVATE FUNCTIONS *********************
