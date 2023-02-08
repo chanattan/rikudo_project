@@ -4,20 +4,20 @@ import java.util.ArrayList;
 public class Algorithm {
     
     //General backtrack algorithm
-    public Graph backtrack(Graph g, boolean boolDiam){ //The first node and the last node have to be labeled 
+    public static void backtrack(Graph g, boolean boolDiam){ //The first node and the last node have to be labeled 
         ArrayList<Node> nodes = g.getNodes();
         Node start = g.getSource();
         Node terminal = g.getDestination();
         if(boolDiam){
-            return this.backtrackingDiamondsRec(g, start, terminal);
+            backtrackingDiamondsRec(g, start, terminal);
         }
         else{
-            return this.backtrackingRec(g, start, terminal);
+            backtrackingRec(g, start, terminal);
         }
     }
 
     // Recursive backtracking solver without the diamonds (Depth-first search) on a labeled graph starting on the start node and ending on the terminal node 
-	public Graph backtrackingRec(Graph g, Node start, Node terminal){
+	private static Graph backtrackingRec(Graph g, Node start, Node terminal){
         Node[] neigh;                   // Neighbors of the node start
         Graph solution = null;          // The graph with all nodes labeled. Is null if there is no solution
         System.out.print("*** start ");
@@ -31,6 +31,7 @@ public class Algorithm {
         else{                           // if start.getLabel() != g.size()
             neigh = start.getNeighbors();
             for(int i=0;i<6 && solution == null;i++){   // 6 because it has always 6 neighbors
+                System.out.println(start.getLabel());
                 if(neigh[i]!=null){
                     if((neigh[i].isFixed() && neigh[i].getLabel()==start.getLabel()+1) || (neigh[i].getLabel() == -1)){
                         neigh[i].setLabel(start.getLabel()+1);
@@ -43,7 +44,7 @@ public class Algorithm {
     }
 
     // Recursive backtracking solver with the diamonds (Depth-first search)
-    public Graph backtrackingDiamondsRec(Graph g, Node start, Node terminal){
+    private static Graph backtrackingDiamondsRec(Graph g, Node start, Node terminal){
         Node[] neigh;                     // Neighbors of the node start
         Graph solution = null;            // The graph with all nodes labeled. Is null if there is no solution
 
