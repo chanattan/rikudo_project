@@ -1,5 +1,5 @@
 public class Node {
-	
+
 	private static int COUNTER = 0;
 	public final int id;
 
@@ -10,11 +10,10 @@ public class Node {
 		SW, SOUTH_WEST,
 		W, WEST,
 		NW, NORTH_WEST,
-		ERR
 	}
 	
 	private int label; 				// Number of the node
-	private final boolean isFixed;	// Constraint for the given problem 
+	private boolean isFixed;	// Constraint for the given problem 
 
 	private Node neigh[];		// Neighboring nodes (a size 6 array with other nodes)
 	private DIR diamonds[];		// The diamonds (a size 2 array with directions of diamonds)	
@@ -72,10 +71,41 @@ public class Node {
 				return DIR.SOUTH_EAST;
 			default:
 				System.err.println("Unknown direction");
-				return DIR.ERR;
+				return null;
 		}
 	}
 
+	public static void pp(Node n){
+		if(n!=null && n.isFixed()){
+			System.out.print("(");
+			System.out.print(n.getLabel());
+			System.out.print(")");
+		}
+		else if(n==null){
+			System.out.print("n null");
+		}
+		else{
+			System.out.print(n.getLabel());
+		}
+		System.out.print(" : ");
+		Node[] neigh = n.getNeighbors();
+		DIR[] dia = n.getDiamonds();
+		for(int i=0;i<6;i++){
+			if(neigh[i]!=null){
+				if((dia[0]!=null && neigh[i]==n.getNeighbor(dia[0])) || (dia[1]!=null && neigh[i]==n.getNeighbor(dia[1]))){
+					System.out.print("(");
+					System.out.print(neigh[i].getLabel());
+					System.out.print(")");
+					System.out.print(" ");
+				}
+				else{
+					System.out.print(neigh[i].getLabel());
+					System.out.print(" ");
+				}
+			}
+		}
+		System.out.println("\n");
+	}
 
 	// Getters
 
@@ -99,7 +129,7 @@ public class Node {
 		return this.label;
 	}
 
-	public boolean getIsFixed(){
+	public boolean isFixed(){
 		return this.isFixed;
 	}
 
@@ -119,7 +149,7 @@ public class Node {
 				return DIR.NW;
 			default:
 				System.err.println("Unknown direction");
-				return DIR.ERR;
+				return null;
 		}
 	}
 
@@ -134,9 +164,13 @@ public class Node {
 		this.label = l;
 	}
 
+	public void setIsFixed(boolean f){
+		this.isFixed = f;
+	}
+
 	// ********************* PRIVATE FUNCTIONS *********************
 
-	public static int dirToIndex(DIR d){
+	private static int dirToIndex(DIR d){
 		switch(d){
 			case NE: case NORTH_EAST:
 				return 0;

@@ -1,3 +1,4 @@
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Polygon;
 import java.awt.geom.Point2D;
@@ -13,9 +14,6 @@ public class NodeV {
 	//graph related
 	private int x, y;
 	private Node node;
-
-	private Node neigh[];		// Neighboring nodes (a size 6 array with other nodes)
-	private Node.DIR diamonds[];		// The diamonds (a size 2 array with directions of diamonds)	
 	
 	public NodeV(Node n, int x, int y) {
 		this.node = n;
@@ -27,10 +25,6 @@ public class NodeV {
 	
 	public NodeV(Node n) {
 		this(n, 0, 0);
-	}
-	
-	public NodeVIterator getNeighborIterator() {
-		return new NodeVIterator(this);
 	}
 	
 	public Node getNode() {
@@ -65,30 +59,11 @@ public class NodeV {
 		return pol.contains(p);
 	}
 	
+	Color c;
 	public void show(Graphics2D g) {
-		Utils.drawCell(g, this);
-	}
-	
-	private class NodeVIterator {
-		private NodeV nodev;
-		private int counter = 0;
-		public NodeVIterator(NodeV n) {
-			this.nodev = n;
-		}
-		
-		public boolean hasNext() {
-			return counter < Node.DIR.values().length-1;
-		}
-		
-		public void reset() {
-			this.counter = 0;
-		}
-		
-		public NodeV getNext() {
-			NodeV n = new NodeV(nodev.node.getNeighbors()[counter]);
-			counter++;
-			return n;
-		}
+		c = Color.WHITE;
+		if (node.isFixed()) c = Color.ORANGE;
+		Utils.drawCell(g, this, c);
 	}
 }
 

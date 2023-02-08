@@ -5,5 +5,6 @@ public class Main {
         Visualizer v = new Visualizer(TestGraph.test1());
         System.out.println(Visualizer.prefix + "Showing frame.");
         v.show();
+        System.out.println(Visualizer.prefix + "Ending program.");
     }
 }

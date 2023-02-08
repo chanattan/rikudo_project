@@ -17,7 +17,7 @@ public class Utils {
 	 * @param label
 	 * @param scale
 	 */
-	public static void drawCell(Graphics2D g, NodeV node) {
+	public static void drawCell(Graphics2D g, NodeV node, Color color) {
 		g.setColor(Color.BLACK);
 		Polygon hex = node.getPolygon();
 		Polygon hex2 = node.getSubPolygon();
@@ -25,7 +25,7 @@ public class Utils {
 		int label = node.getNode().getLabel();
 		int x = node.getX(), y = node.getY();
 		drawHexagon(g, hex);
-		g.setColor(Color.WHITE);
+		g.setColor(color);
 		drawHexagon(g, hex2);
 		//drawHexagon(g, x+2, y+2, scale*.95f);
 		g.setColor(Color.BLACK);

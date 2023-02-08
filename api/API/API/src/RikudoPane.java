@@ -76,8 +76,10 @@ public class RikudoPane extends JPanel implements ActionListener, MouseListener 
 			if (transform != null) {
 				try {
 					Point2D p = transform.inverseTransform(e.getPoint(), null);
-					if (node.isHovered(p))
-						System.out.println("Hovering node " + node.getNode().getLabel());
+					if (node.isHovered(p)) {
+						if (!node.getNode().isFixed())
+							node.getNode().setLabel((node.getNode().getLabel()+1)%graph.getNodesV().length);
+					}
 				} catch (NoninvertibleTransformException e1) {
 					e1.printStackTrace();
 				}

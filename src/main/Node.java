@@ -1,6 +1,9 @@
 package src.main;
 public class Node {
 
+	private static int COUNTER = 0;
+	public final int id;
+
 	public enum DIR{
 		NE, NORTH_EAST,
 		E, EAST,
@@ -18,20 +21,16 @@ public class Node {
 
 
 	public Node(){
-		this.label = -1;
-		this.isFixed = false;
-		this.neigh = new Node[] {null,null,null,null,null,null};
-		this.diamonds = new DIR[] {null, null};
+		this(-1, false);
 	}
 
 	public Node(int label, boolean isFixed){
-		this.label = label;
-		this.isFixed = isFixed;
-		this.neigh = new Node[] {null,null,null,null,null,null};
-		this.diamonds = new DIR[] {null, null};
+		this(label, isFixed, new Node[] {null,null,null,null,null,null}, new DIR[] {null, null});
 	}
 
 	public Node(int label, boolean isFixed, Node neigh[], DIR diamonds[]){
+		this.id = COUNTER;
+		COUNTER++;
 		this.label = label;
 		this.isFixed = isFixed;
 		this.neigh = neigh;
