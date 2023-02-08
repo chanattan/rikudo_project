@@ -78,16 +78,33 @@ public class Node {
 	}
 
 	public static void pp(Node n){
-		if(n.isFixed()) System.out.print("(");
-		System.out.print(n.getLabel());
-		if(n.isFixed()) System.out.print(")");
+		if(n!=null && n.isFixed()){
+			System.out.print("(");
+			System.out.print(n.getLabel());
+			System.out.print(")");
+		}
+		else if(n==null){
+			System.out.print("n null");
+		}
+		else{
+			System.out.print(n.getLabel());
+		}
 		System.out.print(" : ");
 		Node[] neigh = n.getNeighbors();
 		DIR[] dia = n.getDiamonds();
 		for(int i=0;i<6;i++){
-			if(neigh[i]==n.getNeighbor(dia[0]) || neigh[i]==n.getNeighbor(dia[1])) System.out.print("(");
-			System.out.print(neigh[i].getLabel());
-			if(neigh[i]==n.getNeighbor(dia[0]) || neigh[i]==n.getNeighbor(dia[1])) System.out.print(")");
+			if(neigh[i]!=null){
+				if((dia[0]!=null && neigh[i]==n.getNeighbor(dia[0])) || (dia[1]!=null && neigh[i]==n.getNeighbor(dia[1]))){
+					System.out.print("(");
+					System.out.print(neigh[i].getLabel());
+					System.out.print(")");
+					System.out.print(" ");
+				}
+				else{
+					System.out.print(neigh[i].getLabel());
+					System.out.print(" ");
+				}
+			}
 		}
 		System.out.println("\n");
 	}
