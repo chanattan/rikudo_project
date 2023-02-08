@@ -108,20 +108,20 @@ public class Node {
 	public static DIR getDirection(int i){
 		switch(i){
 			case 0:
-				return NE;
+				return DIR.NE;
 			case 1:
-				return E;
+				return DIR.E;
 			case 2:
-				return SE;
+				return DIR.SE;
 			case 3:
-				return SW;
+				return DIR.SW;
 			case 4:
-				return W;
+				return DIR.W;
 			case 5:
-				return NW;
+				return DIR.NW;
 			default:
 				System.err.println("Unknown direction");
-				return -1;
+				return DIR.ERR;
 		}
 	}
 
