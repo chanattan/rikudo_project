@@ -59,7 +59,7 @@ public class Graph {
 		for(int i = 1; i < nodes.size(); i++){
 			Node n = nodes.get(i);
 			int l = n.getLabel();
-			if(l < minLabel){
+			if(l < minLabel && l > 0){
 				minLabel = l;
 				retNode = n;
 			}
