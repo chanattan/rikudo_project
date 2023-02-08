@@ -8,7 +8,6 @@ public class Node {
 		SW, SOUTH_WEST,
 		W, WEST,
 		NW, NORTH_WEST,
-		ERR
 	}
 	
 	private int label; 				// Number of the node
@@ -74,7 +73,7 @@ public class Node {
 				return DIR.SOUTH_EAST;
 			default:
 				System.err.println("Unknown direction");
-				return DIR.ERR;
+				return null;
 		}
 	}
 
@@ -135,7 +134,7 @@ public class Node {
 				return DIR.NW;
 			default:
 				System.err.println("Unknown direction");
-				return DIR.ERR;
+				return null;
 		}
 	}
 
