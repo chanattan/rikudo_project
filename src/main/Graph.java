@@ -68,4 +68,11 @@ public class Graph {
 	}
 
 
+
+	public static void pp(Graph g){
+		ArrayList<Node> nodes = g.getNodes();
+		for(int i=0;i<nodes.size();i++){
+			Node.pp(nodes.get(i));
+		}
+	}
 }
