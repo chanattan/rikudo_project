@@ -1,12 +1,12 @@
 package src.main;
 import java.util.ArrayList;
-/*
+
 import org.sat4j.core.VecInt;
 import org.sat4j.minisat.SolverFactory;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IProblem;
 import org.sat4j.specs.ISolver;
-*/
+
 public class Algorithm {
     
     //General backtrack algorithm
