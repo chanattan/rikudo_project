@@ -9,11 +9,15 @@ public class Graph {
 	private Node dest;			// Last nodes
 
 
+	public Graph(){
+		this.nodes = new ArrayList<Node>();
+		this.source = null;
+		this.dest = null;
+	}
 	
 	public Graph(ArrayList<Node> nodes){
 		this.nodes = nodes;
-		this.source = getMinNode(nodes);
-		this.dest = getMaxNode(nodes);
+		this.finalizeGraph();
 	}
 
 	// No sanity check on actual first and last
@@ -34,6 +38,18 @@ public class Graph {
 
 	public Node getDestination(){
 		return this.dest;
+	}
+
+
+	public void addNode(Node n){
+		this.nodes.add(n);
+	}
+
+	// Finalize the graph (MANDATORY when created with empty constructor)
+	// Sets the source and destination
+	public void finalizeGraph(){
+		this.source = getMinNode(this.nodes);
+		this.dest = getMaxNode(this.nodes);
 	}
 
 	// *********************** PRIVATE ***********************
