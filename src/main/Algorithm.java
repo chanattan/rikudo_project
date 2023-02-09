@@ -104,20 +104,43 @@ public class Algorithm {
 	// ************************************* SAT Solver *************************************
 
 
-	// Solve Rikudo with a SAT-Solver (diamond-less version)
-	public static void satSolve(Graph g){
+	// Solve Rikudo with a SAT-Solver (base with diamond)
+	public static boolean satSolve(Graph g){
+		return satSolve(g, true);
+	}
+
+	// Solve Rikudo. Allow for a diamond-less solve
+	public static boolean satSolve(Graph g, boolean withDiamond){
 
 		ArrayList<Node> nodes = g.getNodes();
-		int n = nodes.size();
 		
 		// Computes the logical formula in CNF form that encodes the problem
-		ArrayList<ArrayList<Integer>> dimacs = graphToDimacs(g);
+		ArrayList<ArrayList<Integer>> dimacs;
+		if(withDiamond){
+			dimacs = graphToDimacsDiamond(g);
+		}else{
+			dimacs = graphToDimacs(g);
+		}
 		
+
+		int[] model = solveDimacs(dimacs);
+		// No solution (or timeout)
+		if(model == null){
+			return false;
+		}
+		modelToGraph(model, nodes);
+		return true;
+	
+	}
+
+
+	private static int[] solveDimacs(ArrayList<ArrayList<Integer>> dimacs){
+
 		int m = dimacs.size(); // Number of clauses
 
 		// Use Sat4j solver cf code example
 		ISolver solver = SolverFactory.newDefault();
-		solver.newVar(bijection(n-1,n-1)); 				// Highest identifier 
+		// solver.newVar(bijection(n-1,n-1)); 			// Highest identifier 
 		solver.setExpectedNumberOfClauses(m);			// Number of clauses
 		for(ArrayList<Integer> clause : dimacs){		// Add clauses to solver
 			// We convert our ArrayList<Integer> to int[]
@@ -127,21 +150,23 @@ public class Algorithm {
 			}catch(ContradictionException e){
 				System.err.println("Contradiction...");
 				e.printStackTrace();
-				return;
+				return null;
 			}
 		}
+		
 
 		IProblem problem = solver;
 		try{
+			int[] model = null;
 			if(problem.isSatisfiable()){
 				// We get the model
-				int[] model = problem.model();
-				modelToGraph(model, nodes);
+				model = problem.model();
 			}
+			return model;
 		} catch (org.sat4j.specs.TimeoutException e) {
 			e.printStackTrace();
 			System.err.println("Timeout");
-			return;
+			return null;
 		}
 	}
 
@@ -174,8 +199,6 @@ public class Algorithm {
 		// The bijection used is below
 
 		ArrayList<Node> nodes = g.getNodes();
-		// Number of vertices
-		int n = nodes.size();
 
 		ArrayList<ArrayList<Integer>> cnf = new ArrayList<ArrayList<Integer>>();
 		
@@ -188,14 +211,19 @@ public class Algorithm {
 		// Consecutive i are adjacent in graphs
 		cnf.addAll(iConsecutiveAdjacent(nodes));
 
-		// Start and destination are correct
-		ArrayList<Integer> startClause = new ArrayList<Integer>();
-		startClause.add(bijection(0,0));
-		cnf.add(startClause);
+		// Fixed nodes
+		cnf.addAll(vFixed(nodes));
 
-		ArrayList<Integer> destClause = new ArrayList<Integer>();
-		destClause.add(bijection(n-1, n-1));
-		cnf.add(destClause);
+		return cnf;
+	}
+
+
+	private static ArrayList<ArrayList<Integer>> graphToDimacsDiamond(Graph g){
+		ArrayList<Node> nodes = g.getNodes();
+		ArrayList<ArrayList<Integer>> cnf = graphToDimacs(g);
+
+		// Diamonds must be satisfied
+		cnf.addAll(vwDiamond(nodes));
 
 		return cnf;
 	}
@@ -306,6 +334,59 @@ public class Algorithm {
 		}
 		return cnf;
 	}
+
+
+	// Creates clauses to force fixed vertices (clauses are just 1 litteral)
+	private static ArrayList<ArrayList<Integer>> vFixed(ArrayList<Node> nodes){
+		ArrayList<ArrayList<Integer>> cnf = new ArrayList<ArrayList<Integer>>();
+
+		for(int i = 0; i < nodes.size(); i++){
+			Node n = nodes.get(i);
+			if(n.isFixed()){
+				ArrayList<Integer> clause = new ArrayList<Integer>();
+				// -1 to map visual labels (1 to n) to "logical" labels (0 to n-1)
+				clause.add(bijection(n.getLabel()-1, i));
+				cnf.add(clause);
+			}
+		}
+
+		return cnf;
+	}
+
+	private static ArrayList<ArrayList<Integer>> vwDiamond(ArrayList<Node> nodes){
+		ArrayList<ArrayList<Integer>> cnf = new ArrayList<ArrayList<Integer>>();
+
+		int n = nodes.size();
+
+		for(int v = 0; v < n; v++){
+			Node vNode = nodes.get(v);
+			for(int w = 0; w < n; w++){
+				if(Node.areDiamonded(vNode, nodes.get(w))){
+					ArrayList<ArrayList<Integer>> vwDiamond = new ArrayList<ArrayList<Integer>>();
+					
+					for(int i = 0; i < n-1; i++){
+						ArrayList<Integer> clause1 = new ArrayList<Integer>();
+						clause1.add(bijection(i,v));
+						clause1.add(bijection(i+1,w));
+
+						ArrayList<Integer> clause2 = new ArrayList<Integer>();
+						clause2.add(bijection(i,w));
+						clause2.add(bijection(i+1,v));
+
+						vwDiamond.add(clause1);
+						vwDiamond.add(clause2);
+					}
+
+					cnf.addAll(dnfToCnf(vwDiamond));
+				}
+			}
+			
+		}
+
+
+		return cnf;
+	}
+	
 
 
 	/*

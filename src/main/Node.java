@@ -44,6 +44,25 @@ public class Node {
 		n2.setNeighbor(n1, oppositeDirection(d));
 	}
 
+	public static boolean areNeighbors(Node n1, Node n2){
+		for(Node n : n1.getNeighbors()){
+			if(n == n2){
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public static boolean areDiamonded(Node n1, Node n2){
+		boolean[] n1Diamonds = n1.getDiamonds();
+		for(int i = 0; i < n1Diamonds.length; i++){
+			if(n1Diamonds[i] && n2 == n1.getNeighbor(getDirection(i))){
+				return true;
+			}
+		}
+		return false;
+	}
+
 	public static DIR oppositeDirection(DIR d){
 		switch(d){
 			case NE:

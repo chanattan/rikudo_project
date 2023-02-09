@@ -3,6 +3,8 @@ import java.lang.Math;
 
 import java.util.ArrayList;
 
+import src.main.Node.DIR;
+
 public class TestGraph {
 
 	public static Graph test1(){
@@ -20,18 +22,78 @@ public class TestGraph {
 
 		// Liaison des nodes
 		// 1
-		Node.linkNodes(node1, nodes.get(1), Node.DIR.NE);
-		Node.linkNodes(node1, node5, Node.DIR.NW);
+		Node.linkNodes(node1, nodes.get(1), DIR.NE);
+		Node.linkNodes(node1, node5, DIR.NW);
 
 		// 2
-		Node.linkNodes(nodes.get(1), nodes.get(2), Node.DIR.NE);
-		Node.linkNodes(nodes.get(1), nodes.get(3), Node.DIR.NW);
+		Node.linkNodes(nodes.get(1), nodes.get(2), DIR.NE);
+		Node.linkNodes(nodes.get(1), nodes.get(3), DIR.NW);
 
 		// 4
-		Node.linkNodes(nodes.get(3), nodes.get(2), Node.DIR.E);
-		Node.linkNodes(nodes.get(3), node5, Node.DIR.SW);
+		Node.linkNodes(nodes.get(3), nodes.get(2), DIR.E);
+		Node.linkNodes(nodes.get(3), node5, DIR.SW);
 
 		return new Graph(nodes);
+	}
+
+	public static Graph test2(){
+		Graph g = new Graph();
+
+		// Creating graph
+		g.addNode(new Node(1, true));
+		g.addNode(new Node());
+		g.addNode(new Node());
+		g.addNode(new Node(4,true));
+
+		// g.updateSourceDest();
+
+		ArrayList<Node> nodes = g.getNodes();
+
+		// Linking
+		Node.linkNodes(nodes.get(1), nodes.get(0), DIR.SE);
+		Node.linkNodes(nodes.get(1), nodes.get(2), DIR.E);
+		Node.linkNodes(nodes.get(1), nodes.get(3), DIR.NE);
+
+		Node.linkNodes(nodes.get(2), nodes.get(0), DIR.SW);
+		Node.linkNodes(nodes.get(2), nodes.get(3), DIR.NW);
+
+		// Diamond (on the right)
+		nodes.get(0).setDiamond(Node.DIR.NE);
+
+
+		g.finalizeGraph();
+
+		return g;
+	}
+
+	public static Graph test3(){
+		Graph g = new Graph();
+
+		// Creating graph
+		g.addNode(new Node(1, true));
+		g.addNode(new Node());
+		g.addNode(new Node());
+		g.addNode(new Node(4,true));
+
+		// g.updateSourceDest();
+
+		ArrayList<Node> nodes = g.getNodes();
+
+		// Linking
+		Node.linkNodes(nodes.get(1), nodes.get(0), DIR.SE);
+		Node.linkNodes(nodes.get(1), nodes.get(2), DIR.E);
+		Node.linkNodes(nodes.get(1), nodes.get(3), DIR.NE);
+
+		Node.linkNodes(nodes.get(2), nodes.get(0), DIR.SW);
+		Node.linkNodes(nodes.get(2), nodes.get(3), DIR.NW);
+
+		// Diamond (on the left)
+		nodes.get(0).setDiamond(Node.DIR.NW);
+
+
+		g.finalizeGraph();
+
+		return g;
 	}
 
 	// Generate a hexagonal graph with random start & end point
