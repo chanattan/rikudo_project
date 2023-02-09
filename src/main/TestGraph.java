@@ -232,6 +232,14 @@ public class TestGraph {
 		nodes.get(t).setLabel(len);
 		nodes.get(t).setIsFixed(true);
 
+		int d;
+		int nei;
+		for(int i=0;i<10;i++){
+			d = (int)(Math.random()*len);
+			nei = (int)(Math.random()*5);
+			nodes.get(d).setDiamond(Node.getDirection(nei));
+		}
+
 		Graph g = new Graph(nodes,nodes.get(s),nodes.get(t));
 		return g;
 	}
