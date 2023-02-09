@@ -169,7 +169,7 @@ public class Algorithm {
             return solution;
         }
     }
-}
+
 
 
 	// ************************************* SAT Solver *************************************
