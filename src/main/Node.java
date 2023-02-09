@@ -17,7 +17,7 @@ public class Node {
 	private boolean isFixed;	// Constraint for the given problem 
 
 	private Node neigh[];		// Neighboring nodes (a size 6 array with other nodes)
-	private DIR diamonds[];		// The diamonds (a size 2 array with directions of diamonds)	
+	private boolean diamonds[];		// The diamonds (a size 6 array with directions of diamonds)	
 
 
 	public Node(){
@@ -25,10 +25,10 @@ public class Node {
 	}
 
 	public Node(int label, boolean isFixed){
-		this(label, isFixed, new Node[] {null,null,null,null,null,null}, new DIR[] {null, null});
+		this(label, isFixed, new Node[] {null,null,null,null,null,null}, new boolean[] {false, false, false, false, false, false});
 	}
 
-	public Node(int label, boolean isFixed, Node neigh[], DIR diamonds[]){
+	public Node(int label, boolean isFixed, Node neigh[], boolean diamonds[]){
 		this.id = COUNTER;
 		COUNTER++;
 		this.label = label;
@@ -76,6 +76,16 @@ public class Node {
 		}
 	}
 
+	private void addDiamond(DIR d){
+		if(this.getDiamonds()[dirToIndex(d)]==false){
+			this.getDiamonds()[dirToIndex(d)]=true;
+		}
+		else{
+			System.err.println("Direction already set");
+		}
+
+	}
+
 	public static void pp(Node n){
 		if(n!=null && n.isFixed()){
 			System.out.print("(");
@@ -90,10 +100,10 @@ public class Node {
 		}
 		System.out.print(" : ");
 		Node[] neigh = n.getNeighbors();
-		DIR[] dia = n.getDiamonds();
+		boolean[] dia = n.getDiamonds();
 		for(int i=0;i<6;i++){
 			if(neigh[i]!=null){
-				if((dia[0]!=null && neigh[i]==n.getNeighbor(dia[0])) || (dia[1]!=null && neigh[i]==n.getNeighbor(dia[1]))){
+				if(dia[i]==true){
 					System.out.print("(");
 					System.out.print(neigh[i].getLabel());
 					System.out.print(")");
@@ -122,7 +132,7 @@ public class Node {
 		return this.neigh[i];
 	}
 
-	public DIR[] getDiamonds(){
+	public boolean[] getDiamonds(){
 		return this.diamonds;
 	}
 
@@ -167,6 +177,16 @@ public class Node {
 
 	public void setIsFixed(boolean f){
 		this.isFixed = f;
+	}
+	// Makes the link in both sides
+	public void setDiamond(DIR d){
+		if(this.getNeighbor(d)!=null && this.getDiamonds()[dirToIndex(d)]==false && this.getNeighbor(d).getDiamonds()[dirToIndex(oppositeDirection(d))]==false){
+			this.addDiamond(d);
+			this.getNeighbor(d).addDiamond(oppositeDirection(d));
+		}
+		else{
+			System.err.print("Link not available for ");System.err.print(this.getLabel());System.err.print(" in direction ");System.err.print(d);
+		}
 	}
 
 	// ********************* PRIVATE FUNCTIONS *********************
