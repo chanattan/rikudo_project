@@ -10,38 +10,40 @@ import org.sat4j.specs.ISolver;
 public class Algorithm {
     
     //General backtrack algorithm
-    public static void backtrack(Graph g, boolean boolDiam){ //The first node and the last node have to be labeled 
+    public static boolean backtrack(Graph g, boolean boolDiam){ //The first node and the last node have to be labeled 
         ArrayList<Node> nodes = g.getNodes();
         Node start = g.getSource();
         Node terminal = g.getDestination();
+        Boolean hasFound = false;
+
         if(boolDiam){
-            backtrackingDiamondsRec(g, start, terminal);
+            hasFound = backtrackingDiamondsRec(g, start, terminal);
         }
         else{
-            backtrackingRec(g, start, terminal);
+            hasFound = backtrackingRec(g, start, terminal);
         }
+        return hasFound;
     }
 
     // Recursive backtracking solver without the diamonds (Depth-first search) on a labeled graph starting on the start node and ending on the terminal node 
-	private static Graph backtrackingRec(Graph g, Node start, Node terminal){
+	private static boolean backtrackingRec(Graph g, Node start, Node terminal){
         Node[] neigh;                   // Neighbors of the node start
-        Graph solution = null;          // The graph with all nodes labeled. Is null if there is no solution
-        System.out.print("*** start ");
-        System.out.print(start.getLabel());
-        System.out.println(" ***");
-        Graph.pp(g);
-        System.out.println("***************");
-        if(start.getLabel() == terminal.getLabel()){          // if the path crosses all cells ->  terminal.getLabel()=g.size()
-            return g;
+        boolean solution = false;          // The graph with all nodes labeled. Is null if there is no solution
+        if(start.getLabel() == terminal.getLabel() && start.isFixed()){          // if the path crosses all cells ->  terminal.getLabel()=g.size()
+            System.out.println("GOAL REACHED!!!");
+            return true;
         }
-        else{                           // if start.getLabel() != g.size()
+        else{                                                 // if start.getLabel() != g.size()
             neigh = start.getNeighbors();
-            for(int i=0;i<6 && solution == null;i++){   // 6 because it has always 6 neighbors
-                System.out.println(start.getLabel());
+            for(int i=0;i<6 && solution == false;i++){   // 6 because it has always 6 neighbors
                 if(neigh[i]!=null){
                     if((neigh[i].isFixed() && neigh[i].getLabel()==start.getLabel()+1) || (neigh[i].getLabel() == -1)){
                         neigh[i].setLabel(start.getLabel()+1);
                         solution = backtrackingRec(g,neigh[i],terminal);
+
+                        if(solution==false && !neigh[i].isFixed()){
+                            neigh[i].setLabel(-1);
+                        }
                     }
                 }
             }
@@ -50,55 +52,124 @@ public class Algorithm {
     }
 
     // Recursive backtracking solver with the diamonds (Depth-first search)
-    private static Graph backtrackingDiamondsRec(Graph g, Node start, Node terminal){
+    private static boolean backtrackingDiamondsRec(Graph g, Node start, Node terminal){
         Node[] neigh;                     // Neighbors of the node start
-        Graph solution = null;            // The graph with all nodes labeled. Is null if there is no solution
+        boolean solution = false;            // The graph with all nodes labeled. Is null if there is no solution
 
-        if(start == terminal){
-            return g;
+        if(start.getLabel() == terminal.getLabel()){          // if the path crosses all cells ->  terminal.getLabel()=g.size()
+            boolean[] dia=start.getDiamonds();
+			switch(start.nbDiam(start.getDiamonds())){
+				case 0:
+					return true;
+				case 1:
+
+					int iD=0;
+					while (dia[iD] == false){
+						iD++;
+					}
+					Node.DIR neighD = Node.getDirection(iD);
+					return start.getNeighbor(neighD).getLabel()==start.getLabel()-1;
+
+				case 2:
+					return false;
+			}
+			System.out.println("GOAL REACHED!!!");
+            return true;
         }
         else{
-            Node.DIR[] dia=start.getDiamonds();
-            Node[] prio_nei = new Node[] {start.getNeighbor(dia[0]),start.getNeighbor(dia[1])};
+            boolean[] dia=start.getDiamonds();
+            int nbD = start.nbDiam(dia);
             //No diamond
-            if(prio_nei[0]==null && prio_nei[1]==null){
+            if(nbD==0){
                 neigh = start.getNeighbors();
-                for(int i=0;i<6 && solution == null;i++){   // 6 because it has always 6 neighbors
+                for(int i=0;i<6 && solution == false;i++){   // 6 because it has always 6 neighbors
                     if(neigh[i]!=null){
                         if((neigh[i].isFixed() && neigh[i].getLabel()==start.getLabel()+1) || (neigh[i].getLabel() == -1)){
                             neigh[i].setLabel(start.getLabel()+1);
                             solution = backtrackingDiamondsRec(g,neigh[i],terminal);
+
+                            if(solution==false && !neigh[i].isFixed()){
+                                neigh[i].setLabel(-1);
+                            }
                         }
                     }
                 }
             }
-            //One diamond and it is available
-            else if((prio_nei[1]==null) && ((prio_nei[0].isFixed() && prio_nei[0].getLabel()==start.getLabel()+1) || (prio_nei[0].getLabel() == -1))){
-                prio_nei[0].setLabel(start.getLabel()+1);
-                solution = backtrackingDiamondsRec(g,prio_nei[0],terminal);
+            //One diamond
+            else if (nbD==1){
+                int iD=0;
+                while (dia[iD] == false){
+                    iD++;
+                }
+                Node.DIR neighD = Node.getDirection(iD);
+
+                if((start.getNeighbor(neighD).getLabel() != -1) && (start.getNeighbor(neighD).getLabel() == start.getLabel()-1)){
+                    neigh = start.getNeighbors();
+					for(int i=0;i<6 && solution == false;i++){   // 6 because it has always 6 neighbors
+						if(neigh[i]!=null){
+							if((neigh[i].isFixed() && neigh[i].getLabel()==start.getLabel()+1) || (neigh[i].getLabel() == -1)){
+								neigh[i].setLabel(start.getLabel()+1);
+								solution = backtrackingDiamondsRec(g,neigh[i],terminal);
+
+								if(solution==false && !neigh[i].isFixed()){
+									neigh[i].setLabel(-1);
+								}
+							}
+						}
+					}
+                }
+				else if(start.getNeighbor(neighD).getLabel() == -1 || (start.getNeighbor(neighD).isFixed() && start.getNeighbor(neighD).getLabel() == start.getLabel()+1)){
+					start.getNeighbor(neighD).setLabel(start.getLabel()+1);
+					solution = backtrackingDiamondsRec(g,start.getNeighbor(neighD),terminal);
+					if(solution==false && !start.getNeighbor(neighD).isFixed()){
+                    	start.getNeighbor(neighD).setLabel(-1);
+                	}
+				}
             }
-            //Symetrical case
-            else if((prio_nei[0]==null) && ((prio_nei[1].isFixed() && prio_nei[1].getLabel()==start.getLabel()+1) || (prio_nei[1].getLabel() == -1))){
-                prio_nei[1].setLabel(start.getLabel()+1);
-                solution = backtrackingDiamondsRec(g,prio_nei[1],terminal);
-            }
-            //Two diamonds but one is not available anymore
-            else if(prio_nei[1]!=null && (prio_nei[0].getLabel() != -1)){
-                prio_nei[1].setLabel(start.getLabel()+1);
-                solution = backtrackingDiamondsRec(g,prio_nei[1],terminal);
-            }
-            //Symetrical case
-            else if(prio_nei[0]!=null && (prio_nei[1].getLabel() != -1)){
-                prio_nei[0].setLabel(start.getLabel()+1);
-                solution = backtrackingDiamondsRec(g,prio_nei[0],terminal);
+			//Two diamonds
+            else if(nbD==2){
+				int iD1=0;
+				int iD2=0;
+                while (dia[iD1] == false){
+                    iD1++;
+                }
+				iD2=iD1+1;
+				while (dia[iD2] == false){
+                    iD2++;
+                }
+
+                Node.DIR neighD1 = Node.getDirection(iD1);
+                Node.DIR neighD2 = Node.getDirection(iD2);
+				if((start.getNeighbor(neighD1).getLabel() == -1) || (start.getNeighbor(neighD1).getLabel() == start.getLabel()+1)){
+                    start.getNeighbor(neighD1).setLabel(start.getLabel()+1);
+					solution = backtrackingDiamondsRec(g,start.getNeighbor(neighD1),terminal);
+					if(solution==false && !start.getNeighbor(neighD1).isFixed()){
+                    	start.getNeighbor(neighD1).setLabel(-1);
+                	}
+                }
+				else if(start.getNeighbor(neighD1).getLabel() == start.getLabel()-1){
+					if((start.getNeighbor(neighD2).getLabel() == -1) || (start.getNeighbor(neighD2).getLabel() == start.getLabel()+1)){
+						start.getNeighbor(neighD2).setLabel(start.getLabel()+1);
+						solution = backtrackingDiamondsRec(g,start.getNeighbor(neighD2),terminal);
+						if(solution==false && !start.getNeighbor(neighD2).isFixed()){
+							start.getNeighbor(neighD2).setLabel(-1);
+						}
+					}
+				}
+				else{
+					//return false;
+				}
             }
             //In all the other cases the rules are broken, so it is not a valid graph
+            else{
+				System.out.println("Diam not valid");
+                return false;
+            }
 
             return solution;
-     
         }
     }
-
+}
 
 
 	// ************************************* SAT Solver *************************************
