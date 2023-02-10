@@ -288,7 +288,7 @@ public class Algorithm {
 		cnf.addAll(iPreciselyOnce(nodes));
 
 		// Consecutive i are adjacent in graphs
-		cnf.addAll(iConsecutiveAdjacent(nodes));
+		cnf.addAll(vConsecutiveAdjacent(nodes));
 
 		// Fixed nodes
 		cnf.addAll(vFixed(nodes));
@@ -325,95 +325,90 @@ public class Algorithm {
 		return new int[] {k-j, j};
 	}
 
+	// I highly recommand looking at the paper that explains which fomulas we are using
 
 
-	// Computes a CNF representing the constraint where all v should appear only once
+	// vertices are present once (we do it for all v here)
 	private static ArrayList<ArrayList<Integer>> vPreciselyOnce(ArrayList<Node> nodes){
 		ArrayList<ArrayList<Integer>> cnf = new ArrayList<ArrayList<Integer>>();
+
 		int n = nodes.size();
 
-		// Each vertex v appears exactly once
 		for(int v = 0; v < n; v++){
-			// vOnceDnf is Phi_v from paper, that is, a DNF
-			ArrayList<ArrayList<Integer>> vOnceDnf = new ArrayList<ArrayList<Integer>>();
+			// v appears at least once
+			ArrayList<Integer> clause1 = new ArrayList<Integer>();
 			for(int i = 0; i < n; i++){
-				ArrayList<Integer> clause = new ArrayList<Integer>();
-				clause.add(bijection(i,v));
+				clause1.add(bijection(i,v));
+			}
+			cnf.add(clause1);
+
+			for(int i = 0; i < n; i++){
 				for(int j = 0; j < n; j++){
 					if(j != i){
+						ArrayList<Integer> clause = new ArrayList<Integer>();
+						clause.add(-bijection(i,v));
 						clause.add(-bijection(j,v));
+						cnf.add(clause);
 					}
 				}
-				vOnceDnf.add(clause);
 			}
-
-			// We convert Phi_v to CNF then fuse it with our final CNF 
-			cnf.addAll(dnfToCnf(vOnceDnf));
 		}
+
 		return cnf;
 	}
-	
 
 
-	// Computes a CNF representing the constraint where all i should appear only once
+	// Label i is only given once
 	private static ArrayList<ArrayList<Integer>> iPreciselyOnce(ArrayList<Node> nodes){
 		ArrayList<ArrayList<Integer>> cnf = new ArrayList<ArrayList<Integer>>();
+
 		int n = nodes.size();
 
-		// Equivalent to the Psi_i from paper, still a DNF
-		ArrayList<ArrayList<Integer>> iOnceDnf = new ArrayList<ArrayList<Integer>>();
-		
-		// Each i is precisely once
 		for(int i = 0; i < n; i++){
-			iOnceDnf.clear();
-			
+			ArrayList<Integer> clause1 = new ArrayList<Integer>();
 			for(int v = 0; v < n; v++){
-				ArrayList<Integer> clause = new ArrayList<Integer>();
-				clause.clear();
-				clause.add(bijection(i,v));
+				clause1.add(bijection(i,v));
+			}
+			cnf.add(clause1);
+
+			for(int v = 0; v < n; v++){
 				for(int w = 0; w < n; w++){
-					if(w != v){
+					if(v != w){
+						ArrayList<Integer> clause = new ArrayList<Integer>();
+						clause.add(-bijection(i,v));
 						clause.add(-bijection(i,w));
+						cnf.add(clause);
 					}
 				}
-				iOnceDnf.add(clause);
 			}
-			
-			// Convert Psi_i to CNF then fuse it
-			cnf.addAll(dnfToCnf(iOnceDnf));
 		}
+
 		return cnf;
 	}
 
-	// Computes a CNF representing the constraint about consecutive path being connected
-	private static ArrayList<ArrayList<Integer>> iConsecutiveAdjacent(ArrayList<Node> nodes){
+
+	// Every summit have its neighbors labeled correctly
+	private static ArrayList<ArrayList<Integer>> vConsecutiveAdjacent(ArrayList<Node> nodes){
 		ArrayList<ArrayList<Integer>> cnf = new ArrayList<ArrayList<Integer>>();
+
 		int n = nodes.size();
 
-		
-		// Consecutive i are adjacent in graphs
-		for(int i = 0; i < n-1; i++){
-			// iConsecAdj is still a DNF, cf paper
-			ArrayList<ArrayList<Integer>> iConsecAdj = new ArrayList<ArrayList<Integer>>();
-			
-			for(int v = 0; v < n;v++){
-				// We check all neighbors
-				for(Node wNode : nodes.get(v).getNeighbors()){
-					if (wNode != null){
-						int w = nodes.indexOf(wNode); // We retreive the index of a neighbor
-						ArrayList<Integer> clause = new ArrayList<Integer>();
-						clause.add(bijection(i,v));
-						clause.add(bijection(i+1, w));
-						iConsecAdj.add(clause);
+		for(int v = 0; v < n; v++){
+			Node nv = nodes.get(v);
+			for(int i = 0; i < n - 1; i++){
+				ArrayList<Integer> clause = new ArrayList<Integer>();
+
+				clause.add(-bijection(i,v));
+				for(int w = 0; w < n; w++){
+					if(Node.areNeighbors(nodes.get(w), nv)){
+						clause.add(bijection(i+1,w));
 					}
 				}
+				cnf.add(clause);
 			}
-
-			cnf.addAll(dnfToCnf(iConsecAdj));
 		}
 		return cnf;
 	}
-
 
 	// Creates clauses to force fixed vertices (clauses are just 1 litteral)
 	private static ArrayList<ArrayList<Integer>> vFixed(ArrayList<Node> nodes){
@@ -432,114 +427,37 @@ public class Algorithm {
 		return cnf;
 	}
 
+
 	private static ArrayList<ArrayList<Integer>> vwDiamond(ArrayList<Node> nodes){
 		ArrayList<ArrayList<Integer>> cnf = new ArrayList<ArrayList<Integer>>();
 
 		int n = nodes.size();
 
 		for(int v = 0; v < n; v++){
-			Node vNode = nodes.get(v);
+			Node nv = nodes.get(v);
 			for(int w = 0; w < n; w++){
-				if(Node.areDiamonded(vNode, nodes.get(w))){
-					ArrayList<ArrayList<Integer>> vwDiamond = new ArrayList<ArrayList<Integer>>();
-					
-					for(int i = 0; i < n-1; i++){
+				if(Node.areDiamonded(nv, nodes.get(w))){
+					for(int i = 1; i < n - 1; i++){
 						ArrayList<Integer> clause1 = new ArrayList<Integer>();
-						clause1.add(bijection(i,v));
+						clause1.add(-bijection(i,v));
 						clause1.add(bijection(i+1,w));
+						clause1.add(bijection(i-1,w));
+						cnf.add(clause1);
 
-						ArrayList<Integer> clause2 = new ArrayList<Integer>();
-						clause2.add(bijection(i,w));
-						clause2.add(bijection(i+1,v));
 
-						vwDiamond.add(clause1);
-						vwDiamond.add(clause2);
+						// This half will we considerd in the reverse case for v and w
+						// ArrayList<Integer> clause2 = new ArrayList<Integer>();
+						// clause2.add(-bijection(i,w));
+						// clause2.add(bijection(i+1,v));
+						// clause2.add(bijection(i-1,v));
+						// cnf.add(clause2);
 					}
-
-					cnf.addAll(dnfToCnf(vwDiamond));
 				}
 			}
-			
 		}
-
-
-		return cnf;
-	}
-	
-
-
-	/*
-	 * Convert a DNF to CNF.
-	 * Each formula is represented in Dimacs DNF to Dimacs CNF
-	 * We are "just" distributing OR over AND
-	 * Here, clauses are representing the conjonction in the OR
-	 */
-	private static ArrayList<ArrayList<Integer>> dnfToCnf(ArrayList<ArrayList<Integer>> dnf){
-		ArrayList<ArrayList<Integer>> cnf = new ArrayList<ArrayList<Integer>>();
-		
-		// n is the number of disjonctions
-		int n = dnf.size();
-
-		// We retrieve the size of every clauses
-		// cf m_i on paper
-		int[] sizes = new int[n];
-		for(int i = 0; i < n; i++){
-			sizes[i] = dnf.get(i).size();
-		}
-
-		// cf paper for "better" explanation
-		// We first iterate over each OR
-		// I will be the indexes to pick (the subset of the products of the segments)
-		// It will change at each round. We will be "adding 1" each time and act as if we were doing
-		// an addition in a base that changes at each digits
-		int[] I = new int[n];
-		for (int i = 0; i < n; i++){
-			I[i] = 0;
-		}
-
-		do{
-			// We pick a var in each clauses
-			ArrayList<Integer> clauses = new ArrayList<Integer>();
-			for(int i = 0; i < n; i++){
-				clauses.add(dnf.get(i).get(I[i]));
-			}
-			cnf.add(clauses);
-			incrI(I, sizes);
-		}while(!isFullZero(I));
-
-
 		return cnf;
 	}
 
-	// Check if a int tab is full of zeros
-	private static boolean isFullZero(int[] I){
-		for(int i = 0; i < I.length; i++){
-			if(I[i] != 0){
-				return false;
-			}
-		}
-		return true;
-	}
-
-	private static int[] incrI(int[] I, int[] bases){
-		int n = bases.length;
-		int i = n-1;
-		I[i] += 1;
-		// Remainder propagation
-		while(i > 0 && I[i] >= bases[i]){
-			I[i] = 0;
-			I[i-1] += 1;
-			i -= 1;
-		}
-		// We might have overflowed the first "bit"
-		if(I[0] >= bases[0]){
-			I[0] = 0;
-		}
-
-		return I;
-	}
-	
-	 
 
 
 }
