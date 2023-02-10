@@ -31,11 +31,14 @@ public class RikudoPane extends JPanel implements ActionListener, MouseInputList
 	private final int WIDTH = 1200;
 	private final int HEIGHT = 800;
 	public static boolean DEBUG_MODE = false;
-	public static int MODE = 1; //0 : PLAY MODE / 1 : CREATOR MODE
+	public static int MODE = 0; //0 : PLAY MODE / 1 : CREATOR MODE
 	private Rectangle2D button_load;
 	private Rectangle2D button_generate;
+	private Rectangle2D button_check;
 	private boolean load_clicked = false;
 	private boolean generate_clicked = false;
+	private boolean check_clicked = false;
+	private boolean check_solution = false;
 	
 	//game constants
 	public static final float CELL_SCALE = .5f; //defines the scale of each node by default is .5f
@@ -62,6 +65,7 @@ public class RikudoPane extends JPanel implements ActionListener, MouseInputList
 		this.setBackground(Color.WHITE);
 		this.button_load = new Rectangle(WIDTH-150, 30, 100, 30);
 		this.button_generate = new Rectangle(WIDTH-150, 70, 100, 30);
+		this.button_check = new Rectangle(WIDTH-180, 30, 150, 30);
 		
 		this.pane = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
 		Graph hexagraph = Utils.getHexaGraph(7);
@@ -72,7 +76,7 @@ public class RikudoPane extends JPanel implements ActionListener, MouseInputList
 	}
 	
 	public void loadCreator(Graph graph, boolean fill) {
-		this.hexagraph = new GraphVOff(graph);
+		this.hexagraph = new GraphVOff(graph);	
 		if (fill) {
 			for (NodeV n : this.hexagraph.getNodesV()) {
 				((NodeVOff) n).toggleOn();
@@ -115,6 +119,17 @@ public class RikudoPane extends JPanel implements ActionListener, MouseInputList
 			}
 			
 			g.setTransform(prev_trans);
+			
+			//gui
+			//check
+			g.setColor(Color.DARK_GRAY);
+			g.fill(button_check);
+			if (!check_clicked) {
+				g.setColor(Color.CYAN);
+				g.drawString("Is solution : " + check_solution, WIDTH-170, 80);
+				g.setColor(Color.WHITE);
+			} else g.setColor(Color.RED);
+			g.drawString("Check solution", WIDTH-165, 50);
 
 			g.setColor(Color.BLACK);
 			g.drawString("PLAY MODE", 15, 20);
@@ -146,6 +161,7 @@ public class RikudoPane extends JPanel implements ActionListener, MouseInputList
 			g.drawString("CREATOR MODE", 15, 20);
 			
 			//menu
+			//load
 			g.setColor(Color.DARK_GRAY);
 			g.setFont(g.getFont().deriveFont(14f));
 			g.fill(button_load);
@@ -154,6 +170,7 @@ public class RikudoPane extends JPanel implements ActionListener, MouseInputList
 			else g.setColor(Color.RED);
 			g.drawString("Load", WIDTH-120, 50);
 			
+			//generate
 			g.setColor(Color.DARK_GRAY);
 			g.fill(button_generate);
 			if (!generate_clicked)
@@ -199,16 +216,20 @@ public class RikudoPane extends JPanel implements ActionListener, MouseInputList
 	public void mouseClicked(MouseEvent e) {
 		System.out.println(e.getX() + " " + e.getY());
 		if (MODE == 0) {
-			for (NodeV node : graph.getNodesV()) {
-				if (transform != null) {
-					try {
-						Point2D p = transform.inverseTransform(e.getPoint(), null);
-						if (node.isHovered(p)) {
-							if (!node.getNode().isFixed())
-								node.getNode().setLabel((node.getNode().getLabel()+1)%graph.getNodesV().length);
+			if (e.getButton() == MouseEvent.BUTTON1) {
+				for (NodeV node : graph.getNodesV()) {
+					if (transform != null) {
+						try {
+							Point2D p = transform.inverseTransform(e.getPoint(), null);
+							if (!e.isControlDown()) {
+								if (node.isHovered(p)) {
+									if (!node.getNode().isFixed())
+										node.getNode().setLabel((node.getNode().getLabel()+1)%graph.getNodesV().length);
+								}
+							} else if (node.isHovered(p)) node.getNode().setLabel(Math.max(0, node.getNode().getLabel()-1));
+						} catch (NoninvertibleTransformException e1) {
+							e1.printStackTrace();
 						}
-					} catch (NoninvertibleTransformException e1) {
-						e1.printStackTrace();
 					}
 				}
 			}
@@ -334,6 +355,14 @@ public class RikudoPane extends JPanel implements ActionListener, MouseInputList
 					e1.printStackTrace();
 				}
 			}
+		} else if (MODE == 0) {
+			if (e.getButton() == MouseEvent.BUTTON1) {
+				if (button_check.contains(e.getPoint())) {
+					check_clicked = true;
+					check_solution = this.graph.getGraph().verify();
+					repaint();
+				}
+			}
 		}
 	}
 
@@ -376,6 +405,7 @@ public class RikudoPane extends JPanel implements ActionListener, MouseInputList
 			drag = 0;
 		}
 		if (RikudoPane.MODE == 1 && e.getButton() == MouseEvent.BUTTON1 && button_load.contains(e.getPoint()) && load_clicked) load_clicked = false;
+		if (RikudoPane.MODE == 0 && e.getButton() == MouseEvent.BUTTON1 && button_check.contains(e.getPoint()) && check_clicked) check_clicked = false;
 	}
 
 	@Override
