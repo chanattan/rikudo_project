@@ -104,6 +104,25 @@ public class Node {
 		}
 	}
 
+	// Finds the neighbor with the next label (if it exists, null otherwise)
+	public Node getNextNeighbor(){
+		int label = this.getLabel();
+		for(Node n : this.getNeighbors()){
+			if(n.getLabel() == label) { return n;}
+		}
+		return null;
+	}
+
+	// Computes the relative direction of a given neighbor, if it exists
+	public DIR getNeighborDirection(Node n){
+		Node[] neigh = this.getNeighbors();
+		for(int i = 0 ; i < neigh.length; i++){
+			if (n == neigh[i]) { return getDirection(i);}
+		}
+		return null;
+	}
+	
+
 	private void addDiamond(DIR d){
 		if(this.getDiamonds()[dirToIndex(d)]==false){
 			this.getDiamonds()[dirToIndex(d)]=true;
