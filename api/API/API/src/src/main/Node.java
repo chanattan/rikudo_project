@@ -286,6 +286,13 @@ public class Node {
 			System.err.print("Link not available for ");System.err.print(this.getLabel());System.err.print(" in direction ");System.err.println(d);
 		}
 	}
+	
+	public void removeDiamond(DIR d) {
+		if(this.getDiamonds()[dirToIndex(d)] && this.getNeighbor(d).getDiamonds()[dirToIndex(oppositeDirection(d))]){
+			this.getDiamonds()[dirToIndex(d)]=false;
+			this.getNeighbor(d).getDiamonds()[dirToIndex(oppositeDirection(d))] = false;
+		}
+	}
 
 	// ********************* PRIVATE FUNCTIONS *********************
 

@@ -11,10 +11,12 @@ public class GraphV {
 	public GraphV(Graph g) {
 		this.graph = g;
 		this.nodes = new NodeV[graph.getNodes().size()];
-		
+		System.out.println("node size : " + graph.getNodes().size());
 		for (Node node : graph.getNodes()) {
+			System.out.println("node id : " + node.id);
 			nodes[node.id] = new NodeV(node);
 		}
+		System.out.println("end");
 		
 		if (graph.getSource() == null || graph.getDestination() == null) {
 			System.err.println(Visualizer.prefix + "Error, found in building of GraphV source or destination null.");

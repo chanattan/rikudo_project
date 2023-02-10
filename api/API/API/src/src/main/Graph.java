@@ -10,24 +10,28 @@ public class Graph {
 
 
 	public Graph(){
+		Node.COUNTER = 0;
 		this.nodes = new ArrayList<Node>();
 		this.source = null;
 		this.dest = null;
 	}
 	
 	public Graph(ArrayList<Node> nodes){
+		Node.COUNTER = 0;
 		this.nodes = nodes;
 		this.finalizeGraph();
 	}
 
 	// No sanity check on actual first and last
 	public Graph(ArrayList<Node> nodes, Node source, Node dest){
+		Node.COUNTER = 0;
 		this.nodes = nodes;
 		this.source = source;
 		this.dest = dest;
 	}
 
 	public Graph(Graph g){
+		Node.COUNTER = 0;
 		this.nodes = new ArrayList<Node>();
 		for(int i=0;i<g.getNodes().size();i++){
 			this.nodes.add(new Node(g.getNodes().get(i), g.getNodes().get(i).id));

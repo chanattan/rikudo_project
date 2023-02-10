@@ -23,7 +23,7 @@ public class Visualizer implements KeyListener {
         this.frame = new JFrame();
         this.frame.setTitle("Rikudo Creator JGC v1.0");
         GraphV g = new GraphV(graph);
-        pane = new RikudoPane(this, g);
+        pane = new RikudoPane(frame, this, g);
         this.global_x = new int[] {0,0};
         this.global_y = new int[] {0,0};
         this.zoom = new float[] {1f,1f};
