@@ -35,6 +35,7 @@ public class RikudoPane extends JPanel implements ActionListener, MouseInputList
 	private Rectangle2D button_load;
 	private Rectangle2D button_generate;
 	private Rectangle2D button_check;
+	private Rectangle2D button_;
 	private boolean load_clicked = false;
 	private boolean generate_clicked = false;
 	private boolean check_clicked = false;
