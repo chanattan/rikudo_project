@@ -87,6 +87,7 @@ We created an Hamiltonian circuits.
 # Interface
 
  We developed a GUI interface with Java using Swing and AWT to draw the hexagon maps and interact with the algorithms.
+ You can run it using the command `java -jar RikudoCreatorJGC.jar` in the command line.
  The software first opens in *PLAY MODE* which is where you can play around with one graph.
  In order to switch between the modes you can use the key **M**.
  
