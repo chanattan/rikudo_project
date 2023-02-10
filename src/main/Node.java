@@ -51,7 +51,10 @@ public class Node {
 	}
 
 
-	//check if we can set label for this node
+	/**
+	 * @param label : the new label we want to use
+	 * @return Whether this label is valid considering diamonds and neighbors
+	 */
 	public boolean isLegal(int label){
 		Node[] neigh = getActualDiamondNodes();
 		//if there is only -1 around it
@@ -96,12 +99,23 @@ public class Node {
 		}
 	}
 
-	// Link Node 1 and 2 on a direction (node n1's direction toward n2) (ex left : n1, right : n2, d = EAST)
+	/**
+	 * Link {@code}Node{@code} 1 and 2 on a direction
+	 * @param n1 : The first {@code}Node{@code}
+	 * @param n2 : The second {@code}Node{@code}
+	 * @param d : The direction between the nodes, from {@code}n1{@code} to {@code}n2{@code}
+	 */
 	public static void linkNodes(Node n1, Node n2, DIR d){
 		n1.setNeighbor(n2, d);
 		n2.setNeighbor(n1, oppositeDirection(d));
 	}
 
+	/**
+	 * Checks if 2 {@code}Node{@code} are neighbors
+	 * @param n1 : the first {@code}Node{@code}
+	 * @param n2 : the second {@code}Node{@code}
+	 * @return Whether {@code}n1{@code} and {@code}n2{@code} are linked
+	 */
 	public static boolean areNeighbors(Node n1, Node n2){
 		for(Node n : n1.getNeighbors()){
 			if(n == n2){
@@ -111,6 +125,12 @@ public class Node {
 		return false;
 	}
 
+	/**
+	 * Check if 2 {@code}Node{@code} are neighbor and separated by a diamond
+	 * @param n1 : the first {@code}Node{@code}
+	 * @param n2 : the second {@code}Node{@code}
+	 * @return Whether {@code}n1{@code} and {@code}n2{@code} are separated by a diamond
+	 */
 	public static boolean areDiamonded(Node n1, Node n2){
 		boolean[] n1Diamonds = n1.getDiamonds();
 		for(int i = 0; i < n1Diamonds.length; i++){
@@ -121,6 +141,11 @@ public class Node {
 		return false;
 	}
 
+	/**
+	 * Computes the opposite direction of a direction
+	 * @param d : A direction
+	 * @return The opposite direction
+	 */
 	public static DIR oppositeDirection(DIR d){
 		switch(d){
 			case NE:
@@ -153,7 +178,10 @@ public class Node {
 		}
 	}
 
-	// Finds the neighbor with the next label (if it exists, null otherwise)
+	/**
+	 * Finds the neighbor with the next label
+	 * @return the {@code}Node{@code} object of the neighbor, {@code}null{@code} if it doesn't exist
+	 */
 	public Node getNextNeighbor(){
 		int label = this.getLabel();
 		for(Node n : this.getNeighbors()){
@@ -162,7 +190,11 @@ public class Node {
 		return null;
 	}
 
-	// Computes the relative direction of a given neighbor, if it exists
+	/**
+	 * Computes the relative direction of a given neighbor
+	 * @param n : a {@code}Node{@code}
+	 * @return the direction between {@code}this{@code} and {@code}n{@code}, {@code}null{@code} if it doesn't exist
+	 */
 	public DIR getNeighborDirection(Node n){
 		Node[] neigh = this.getNeighbors();
 		for(int i = 0 ; i < neigh.length; i++){
@@ -172,6 +204,10 @@ public class Node {
 	}
 	
 
+	/**
+	 * Add a diamond in a direction
+	 * @param d : A direction
+	 */
 	private void addDiamond(DIR d){
 		if(this.getDiamonds()[dirToIndex(d)]==false){
 			this.getDiamonds()[dirToIndex(d)]=true;
@@ -182,6 +218,10 @@ public class Node {
 
 	}
 
+	/**
+	 * Pretty prints a {@code}Node{@code}
+	 * @param n : the {@code}Node{@code} to pretty print
+	 */
 	public static void pp(Node n){
 		if(n!=null && n.isFixed()){
 			System.out.print("(");
@@ -241,8 +281,13 @@ public class Node {
 		return maxLab + 1;
 	}
 
-	// Getters
 
+	/**
+	 * Computes the number of actual diamonds of an array
+	 * @deprecated
+	 * @param d : a boolean array representing whether a diamond is present
+	 * @return The number of diamonds ({@code}true{@code})
+	 */
 	public int nbDiam(boolean[] d){
 		int res = 0;
 		for(int i=0;i<6;i++){
@@ -253,6 +298,11 @@ public class Node {
 		return res;
 	}
 
+
+	/**
+	 * Computes the number of actual diamonds
+	 * @return The number of diamonds ({@code}true{@code})
+	 */
 	public int getNumberDiamond(){
 		int res = 0;
 		boolean[] d = this.getDiamonds();
@@ -264,10 +314,19 @@ public class Node {
 		return res;
 	}
 
+	/**
+	 * Get neighboring {@code}Node{@code} array
+	 * @return A {@code}Node{@code} array with cells depending on direction, {@code}null{@code} if no neighbor in that direction
+	 */
 	public Node[] getNeighbors(){
 		return neigh;
 	}
 
+	/**
+	 * Gets the neighboring {@code}Node{@code} in the given direction
+	 * @param d : a direction
+	 * @return The neighboring {@code}Node{@code}, {@code}null{@code} if it doesn't exist
+	 */
 	public Node getNeighbor(DIR d){
 		int i = dirToIndex(d);
 		if(i == -1){
@@ -276,18 +335,35 @@ public class Node {
 		return this.neigh[i];
 	}
 
+	/**
+	 * Gets the diamond array. It is reprensented as a size 6 array with boolean in the directions
+	 * @return The diamond array
+	 */
 	public boolean[] getDiamonds(){
 		return this.diamonds;
 	}
 
+	/**
+	 * Gets the {@code}Node{@code} label
+	 * @return The label
+	 */
 	public int getLabel(){
 		return this.label;
 	}
 
+	/**
+	 * 
+	 * @return Whether a {@code}Node{@code} is fixed as a constraint
+	 */
 	public boolean isFixed(){
 		return this.isFixed;
 	}
 
+	/**
+	 * Convert an array index to a direction
+	 * @param i : the array index
+	 * @return The direction associated with the direction
+	 */
 	public static DIR getDirection(int i){
 		switch(i){
 			case 0:
@@ -334,21 +410,38 @@ public class Node {
 		return retDiam.toArray(new Node[0]);
 	}
 
-	// Setters
-
+	/**
+	 * Change a {@code}Node{@code} neighbor.
+	 * @implNote : This is not symmetrical !!
+	 * @param neigh : the new neighbor
+	 * @param d : the direction from {@code}this{@code} to {@code}neigh{@code}
+	 */
 	public void setNeighbor(Node neigh, DIR d){
 		int i = dirToIndex(d);
 		this.neigh[i] = neigh;
 	}
 
+	/**
+	 * Sets the {@code}Node{@code} label
+	 * @param l : the new label
+	 */
 	public void setLabel(int l){
 		this.label = l;
 	}
 
+	/**
+	 * Sets whether a {@code}Node{@code} is fixed
+	 * @param f : whether to fix the {@code}Node{@code}
+	 */
 	public void setIsFixed(boolean f){
 		this.isFixed = f;
 	}
+
 	// Makes the link in both sides
+	/**
+	 * Add a diamond in the given direction in a symmetrical way (i.e. also to the other {@code}Node{@code})
+	 * @param d : the direction in which the diamond is
+	 */
 	public void setDiamond(DIR d){
 		if(this.getNeighbor(d)!=null && this.getDiamonds()[dirToIndex(d)]==false && this.getNeighbor(d).getDiamonds()[dirToIndex(oppositeDirection(d))]==false){
 			this.addDiamond(d);
@@ -359,8 +452,11 @@ public class Node {
 		}
 	}
 
-	// ********************* PRIVATE FUNCTIONS *********************
-
+	/**
+	 * Converts a direction to array index
+	 * @param d : a direction
+	 * @return The index to be used in arrays
+	 */
 	private static int dirToIndex(DIR d){
 		switch(d){
 			case NE: case NORTH_EAST:
