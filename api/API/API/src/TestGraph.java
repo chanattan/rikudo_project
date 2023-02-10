@@ -3,7 +3,26 @@ import java.lang.Math;
 import java.util.ArrayList;
 
 public class TestGraph {
-
+	
+	public static Graph test() {
+        ArrayList<Node> nodes = new ArrayList<Node>();
+        Node n = new Node(1, false);
+        Node n2 = new Node(2, false);
+        Node n3 = new Node(3, false);
+        Node n4 = new Node(4, false);
+        Node n5 = new Node(5, false);
+        nodes.add(n);
+        nodes.add(n2);
+//        nodes.add(n3);
+//        nodes.add(n4);
+//        nodes.add(n5);
+        Node.linkNodes(n, n2, Node.DIR.NE);
+//        Node.linkNodes(n3, n2, Node.DIR.NE);
+//        Node.linkNodes(n3, n4, Node.DIR.W);
+//        Node.linkNodes(n4, n5, Node.DIR.NW);
+        return new Graph(nodes);
+    }
+	
 	public static Graph test1(){
 		ArrayList<Node> nodes = new ArrayList<Node>();
 
@@ -100,18 +119,18 @@ public class TestGraph {
 		//First node
 		nodes.get(fst_pos).setNeighbor(nodes.get(fst_pos-n+1),Node.DIR.NORTH_EAST);
 		nodes.get(fst_pos).setNeighbor(nodes.get(fst_pos+1),Node.DIR.EAST);
-		nodes.get(fst_pos).setNeighbor(nodes.get(fst_pos+n+1),Node.DIR.SOUTH_EAST);
+		nodes.get(fst_pos).setNeighbor(nodes.get(fst_pos+n),Node.DIR.SOUTH_EAST);
 		//Middle nodes
 		for(int j=1;j<n-1;j++){
 			nodes.get(fst_pos+j).setNeighbor(nodes.get((fst_pos+j)-n+1),Node.DIR.NORTH_EAST);
 			nodes.get(fst_pos+j).setNeighbor(nodes.get((fst_pos+j)+1),Node.DIR.EAST);
-			nodes.get(fst_pos+j).setNeighbor(nodes.get((fst_pos+j)+n+1),Node.DIR.SOUTH_EAST);
-			nodes.get(fst_pos+j).setNeighbor(nodes.get((fst_pos+j)+n),Node.DIR.SOUTH_WEST);
+			nodes.get(fst_pos+j).setNeighbor(nodes.get((fst_pos+j)+n),Node.DIR.SOUTH_EAST);
+			nodes.get(fst_pos+j).setNeighbor(nodes.get((fst_pos+j)+n-1),Node.DIR.SOUTH_WEST);
 			nodes.get(fst_pos+j).setNeighbor(nodes.get((fst_pos+j)-1),Node.DIR.WEST);
 			nodes.get(fst_pos+j).setNeighbor(nodes.get((fst_pos+j)-n),Node.DIR.NORTH_WEST);
 		}
 		//Last node
-		nodes.get(fst_pos+n-1).setNeighbor(nodes.get((fst_pos+n-1)+n),Node.DIR.SOUTH_WEST);
+		nodes.get(fst_pos+n-1).setNeighbor(nodes.get((fst_pos+n-1)+n-1),Node.DIR.SOUTH_WEST);
 		nodes.get(fst_pos+n-1).setNeighbor(nodes.get((fst_pos+n-1)-1),Node.DIR.WEST);
 		nodes.get(fst_pos+n-1).setNeighbor(nodes.get((fst_pos+n-1)-n),Node.DIR.NORTH_WEST);
 
@@ -124,7 +143,7 @@ public class TestGraph {
 			nodes.get(fst_pos).setNeighbor(nodes.get(fst_pos+1),Node.DIR.EAST);
 			nodes.get(fst_pos).setNeighbor(nodes.get(fst_pos+num),Node.DIR.SOUTH_EAST);
 			//Middle nodes
-			for(int j=0;j<num-1;j++){
+			for(int j=1;j<num-1;j++){
 				nodes.get(fst_pos+j).setNeighbor(nodes.get((fst_pos+j)-num-1),Node.DIR.NORTH_WEST);
 				nodes.get(fst_pos+j).setNeighbor(nodes.get((fst_pos+j)-num),Node.DIR.NORTH_EAST);
 				nodes.get(fst_pos+j).setNeighbor(nodes.get((fst_pos+j)+1),Node.DIR.EAST);
@@ -136,7 +155,7 @@ public class TestGraph {
 			nodes.get(fst_pos+num-1).setNeighbor(nodes.get((fst_pos+num-1)-num-1),Node.DIR.NORTH_WEST);
 			nodes.get(fst_pos+num-1).setNeighbor(nodes.get((fst_pos+num-1)-num),Node.DIR.NORTH_EAST);
 			nodes.get(fst_pos+num-1).setNeighbor(nodes.get((fst_pos+num-1)-1),Node.DIR.WEST);
-			nodes.get(fst_pos+num-1).setNeighbor(nodes.get((fst_pos+num-1)+num-1),Node.DIR.NORTH_WEST);
+			nodes.get(fst_pos+num-1).setNeighbor(nodes.get((fst_pos+num-1)+num-1),Node.DIR.SOUTH_WEST);
 
 		}
 		//Last line (size 4)
@@ -158,18 +177,18 @@ public class TestGraph {
 		nodes.get(len-1).setNeighbor(nodes.get(len-6),Node.DIR.NORTH_WEST);
 		nodes.get(len-1).setNeighbor(nodes.get(len-5),Node.DIR.NORTH_EAST);
 
-
-		Graph g = new Graph(nodes);
 		// To change later
 		int s = (int)(Math.random()*len);
 		int t = (int)(Math.random()*len);
 		while(t==s){
-			t = (int)(Math.random())*len;
+			t = (int)(Math.random()*len);
 		}
 		nodes.get(s).setLabel(1);
 		nodes.get(s).setIsFixed(true);
-		nodes.get(t).setLabel(len-1);
+		nodes.get(t).setLabel(len);
 		nodes.get(t).setIsFixed(true);
+
+		Graph g = new Graph(nodes,nodes.get(s),nodes.get(t));
 		return g;
 	}
 }

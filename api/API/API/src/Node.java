@@ -1,6 +1,6 @@
 public class Node {
 
-	private static int COUNTER = 0;
+	public static int COUNTER = 0;
 	public final int id;
 
 	public enum DIR{
@@ -16,18 +16,28 @@ public class Node {
 	private boolean isFixed;	// Constraint for the given problem 
 
 	private Node neigh[];		// Neighboring nodes (a size 6 array with other nodes)
-	private DIR diamonds[];		// The diamonds (a size 2 array with directions of diamonds)	
+	private boolean diamonds[];		// The diamonds (a size 6 array with directions of diamonds)	
 
-
+	//Copy constructor
+	public Node(Node n, int id) {
+		this.id = id;
+		this.label = n.label;
+		this.diamonds = new boolean[6];
+		for (int i = 0; i < n.diamonds.length; i++) this.diamonds[i] = n.diamonds[i];
+		this.isFixed = n.isFixed;
+		this.neigh = new Node[n.neigh.length];
+		for (int i = 0; i < n.neigh.length; i++) this.neigh[i] = n.neigh[i];
+	}
+	
 	public Node(){
 		this(-1, false);
 	}
 
 	public Node(int label, boolean isFixed){
-		this(label, isFixed, new Node[] {null,null,null,null,null,null}, new DIR[] {null, null});
+		this(label, isFixed, new Node[] {null,null,null,null,null,null}, new boolean[] {false, false, false, false, false, false});
 	}
 
-	public Node(int label, boolean isFixed, Node neigh[], DIR diamonds[]){
+	public Node(int label, boolean isFixed, Node neigh[], boolean diamonds[]){
 		this.id = COUNTER;
 		COUNTER++;
 		this.label = label;
@@ -41,6 +51,25 @@ public class Node {
 	public static void linkNodes(Node n1, Node n2, DIR d){
 		n1.setNeighbor(n2, d);
 		n2.setNeighbor(n1, oppositeDirection(d));
+	}
+
+	public static boolean areNeighbors(Node n1, Node n2){
+		for(Node n : n1.getNeighbors()){
+			if(n == n2){
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public static boolean areDiamonded(Node n1, Node n2){
+		boolean[] n1Diamonds = n1.getDiamonds();
+		for(int i = 0; i < n1Diamonds.length; i++){
+			if(n1Diamonds[i] && n2 == n1.getNeighbor(getDirection(i))){
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public static DIR oppositeDirection(DIR d){
@@ -75,6 +104,16 @@ public class Node {
 		}
 	}
 
+	private void addDiamond(DIR d){
+		if(this.getDiamonds()[dirToIndex(d)]==false){
+			this.getDiamonds()[dirToIndex(d)]=true;
+		}
+		else{
+			System.err.println("Direction already set");
+		}
+
+	}
+
 	public static void pp(Node n){
 		if(n!=null && n.isFixed()){
 			System.out.print("(");
@@ -89,10 +128,10 @@ public class Node {
 		}
 		System.out.print(" : ");
 		Node[] neigh = n.getNeighbors();
-		DIR[] dia = n.getDiamonds();
+		boolean[] dia = n.getDiamonds();
 		for(int i=0;i<6;i++){
 			if(neigh[i]!=null){
-				if((dia[0]!=null && neigh[i]==n.getNeighbor(dia[0])) || (dia[1]!=null && neigh[i]==n.getNeighbor(dia[1]))){
+				if(dia[i]==true){
 					System.out.print("(");
 					System.out.print(neigh[i].getLabel());
 					System.out.print(")");
@@ -109,6 +148,16 @@ public class Node {
 
 	// Getters
 
+	public int nbDiam(boolean[] d){
+		int res = 0;
+		for(int i=0;i<6;i++){
+			if(d[i] == true){
+				res += 1;
+			}
+		}
+		return res;
+	}
+
 	public Node[] getNeighbors(){
 		return neigh;
 	}
@@ -121,7 +170,7 @@ public class Node {
 		return this.neigh[i];
 	}
 
-	public DIR[] getDiamonds(){
+	public boolean[] getDiamonds(){
 		return this.diamonds;
 	}
 
@@ -166,6 +215,16 @@ public class Node {
 
 	public void setIsFixed(boolean f){
 		this.isFixed = f;
+	}
+	// Makes the link in both sides
+	public void setDiamond(DIR d){
+		if(this.getNeighbor(d)!=null && this.getDiamonds()[dirToIndex(d)]==false && this.getNeighbor(d).getDiamonds()[dirToIndex(oppositeDirection(d))]==false){
+			this.addDiamond(d);
+			this.getNeighbor(d).addDiamond(oppositeDirection(d));
+		}
+		else{
+			System.err.print("Link not available for ");System.err.print(this.getLabel());System.err.print(" in direction ");System.err.println(d);
+		}
 	}
 
 	// ********************* PRIVATE FUNCTIONS *********************

@@ -1,10 +1,11 @@
+import java.awt.Color;
 
 /*
  * GraphV acts as a handler for Graph, it allows the parsing of nodes to NodeV.
  */
 public class GraphV {
-	private NodeV[] nodes;
-	private Graph graph;
+	protected NodeV[] nodes;
+	protected Graph graph;
 	
 	public GraphV(Graph g) {
 		this.graph = g;
@@ -14,16 +15,31 @@ public class GraphV {
 			nodes[node.id] = new NodeV(node);
 		}
 		
-		//we consider the source of the graph to be at the center of the screen
-		nodes[graph.getSource().id].setPosition(0, 0);
-		//we want to set the position to other cells relative to the source
-		DFS(g.getSource().id);
+		if (graph.getSource() == null || graph.getDestination() == null) {
+			System.err.println(Visualizer.prefix + "Error, found in building of GraphV source or destination null.");
+		} else {
+			//we consider the source of the graph to be at the center of the screen
+			nodes[graph.getSource().id].forceColor(Color.RED);
+			nodes[graph.getSource().id].setPosition(0, 0);
+			
+			nodes[graph.getDestination().id].forceColor(Color.GREEN);
+			graph.getDestination().setLabel(graph.getNodes().size());
+			//we want to set the position to other cells relative to the source
+			DFS(g.getSource().id);
+		}
+	}
+	
+	public Graph getGraph() {
+		return graph;
 	}
 	
 	public NodeV[] getNodesV() {
 		return nodes;
 	}
 	
+	/*
+	 * Recursive DFS used in DFS(int v).
+	 */
     private void DFS_bis(int cur, boolean visited[])
     {
     	NodeV node = nodes[cur];
@@ -39,32 +55,33 @@ public class GraphV {
         	if (neigh != null) {
 	            int next = neigh.id;
 	            if (!visited[next]) {
+	            	int xb = x;
+	            	int yb = y;
 		            switch (counter) { //TODO fix gap to remove hardcoded values
 		            	case 0: //NE
-		            		x+=RikudoPane.CELL_WIDTH/2-7;
-		            		y-=RikudoPane.CELL_HEIGHT-26;
+		            		xb+=RikudoPane.CELL_WIDTH/2-7;
+		            		yb-=RikudoPane.CELL_HEIGHT-26;
 		            		break;
 		            	case 1: //E
-		            		x+=RikudoPane.CELL_WIDTH-15;
+		            		xb+=RikudoPane.CELL_WIDTH-15;
 		            		break;
 		            	case 2: //SE
-		            		x+=RikudoPane.CELL_WIDTH/2-7;
-		            		y+=RikudoPane.CELL_HEIGHT-26;
+		            		xb+=RikudoPane.CELL_WIDTH/2-7;
+		            		yb+=RikudoPane.CELL_HEIGHT-26;
 		            		break;
 		            	case 3: //SW
-		            		x-=RikudoPane.CELL_WIDTH/2-7;
-		            		y+=RikudoPane.CELL_HEIGHT-26;
+		            		xb-=RikudoPane.CELL_WIDTH/2-7;
+		            		yb+=RikudoPane.CELL_HEIGHT-26;
 		            		break;
 		            	case 4: //W
-		            		x-=RikudoPane.CELL_WIDTH-15;
+		            		xb-=RikudoPane.CELL_WIDTH-15;
 		            		break;
 		            	case 5: //NW
-		            		x-=RikudoPane.CELL_WIDTH/2-7;
-		            		y-=RikudoPane.CELL_HEIGHT-26;
+		            		xb-=RikudoPane.CELL_WIDTH/2-7;
+		            		yb-=RikudoPane.CELL_HEIGHT-26;
 		            		break;
 		            }
-		            
-		            nodes[next].setPosition(x, y);
+		            nodes[next].setPosition(xb, yb);
 
 		            DFS_bis(next, visited);
 	            }
@@ -83,7 +100,5 @@ public class GraphV {
         boolean visited[] = new boolean[graph.getNodes().size()];
         
         DFS_bis(v, visited);
-
-    	System.out.println("DFS ended.");
     }
 }

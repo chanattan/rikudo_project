@@ -1,7 +1,6 @@
-package src.main;
 public class Node {
 
-	private static int COUNTER = 0;
+	public static int COUNTER = 0;
 	public final int id;
 
 	public enum DIR{
@@ -19,7 +18,17 @@ public class Node {
 	private Node neigh[];		// Neighboring nodes (a size 6 array with other nodes)
 	private boolean diamonds[];		// The diamonds (a size 6 array with directions of diamonds)	
 
-
+	//Copy constructor
+	public Node(Node n, int id) {
+		this.id = id;
+		this.label = n.label;
+		this.diamonds = new boolean[6];
+		for (int i = 0; i < n.diamonds.length; i++) this.diamonds[i] = n.diamonds[i];
+		this.isFixed = n.isFixed;
+		this.neigh = new Node[n.neigh.length];
+		for (int i = 0; i < n.neigh.length; i++) this.neigh[i] = n.neigh[i];
+	}
+	
 	public Node(){
 		this(-1, false);
 	}

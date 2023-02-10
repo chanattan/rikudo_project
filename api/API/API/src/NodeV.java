@@ -9,18 +9,19 @@ import java.awt.geom.Point2D;
 public class NodeV {
 	
 	//draw related
-	private Polygon pol, subpol;
+	protected Polygon pol;
+
+	protected Polygon subpol;
 	
 	//graph related
-	private int x, y;
-	private Node node;
+	protected int x, y;
+	protected Node node;
+	protected boolean forceColor = false;
 	
 	public NodeV(Node n, int x, int y) {
 		this.node = n;
 		this.x = x;
 		this.y = y;
-		this.pol = Utils.getHexagon(x, y, RikudoPane.CELL_SCALE);
-		this.subpol = Utils.getHexagon(x+2, y+2, RikudoPane.CELL_SCALE*.95f);
 	}
 	
 	public NodeV(Node n) {
@@ -50,20 +51,45 @@ public class NodeV {
 	public void setPosition(int x, int y) {
 		this.x = x;
 		this.y = y;
-
+		System.out.println("val x " + x + " for id " + node.id + " for label " + node.getLabel());
 		this.pol = Utils.getHexagon(x, y, RikudoPane.CELL_SCALE);
 		this.subpol = Utils.getHexagon(x+2, y+2, RikudoPane.CELL_SCALE*.95f);
 	}
 	
 	public boolean isHovered(Point2D p) {
+		if (pol == null) {
+			System.err.println(Visualizer.prefix + "Warning: polygon is null for node of id " + node.id + " (" + node.getLabel() + ")");
+			return false;
+		}
 		return pol.contains(p);
 	}
 	
-	Color c;
+	/**
+	 * The color of a node is defined according to its state, its color
+	 * should not be set manually, however for the source and bottom we can
+	 * set a specific color.
+	 * 
+	 * @param c : color to be set by force, if null then there is no force color
+	 */
+	public void forceColor(Color c) {
+		if (c == null) {
+			this.forceColor = false;
+			return;
+		}
+		this.forceColor = true;
+		this.c = c;
+	}
+	
+	private Color c;
 	public void show(Graphics2D g) {
-		c = Color.WHITE;
-		if (node.isFixed()) c = Color.ORANGE;
-		Utils.drawCell(g, this, c);
+		if (pol != null || subpol != null) {
+			if (!forceColor) {
+				if (this.node.isFixed())
+					c = Color.ORANGE;
+				else c = Color.WHITE;
+			}
+			Utils.drawCell(g, this, c);
+		}
 	}
 }
 

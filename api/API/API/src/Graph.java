@@ -8,11 +8,15 @@ public class Graph {
 	private Node dest;			// Last nodes
 
 
+	public Graph(){
+		this.nodes = new ArrayList<Node>();
+		this.source = null;
+		this.dest = null;
+	}
 	
 	public Graph(ArrayList<Node> nodes){
 		this.nodes = nodes;
-		this.source = getMinNode(nodes);
-		this.dest = getMaxNode(nodes);
+		this.finalizeGraph();
 	}
 
 	// No sanity check on actual first and last
@@ -33,6 +37,29 @@ public class Graph {
 
 	public Node getDestination(){
 		return this.dest;
+	}
+	
+	public void setSource(Node source) {
+		this.source = source;
+	}
+	
+	public void setDestination(Node dest) {
+		this.dest = dest;
+	}
+
+	public void setNodes(ArrayList<Node> nodes) {
+		this.nodes = nodes;
+	}
+	
+	public void addNode(Node n){
+		this.nodes.add(n);
+	}
+
+	// Finalize the graph (MANDATORY when created with empty constructor)
+	// Sets the source and destination
+	public void finalizeGraph(){
+		this.source = getMinNode(this.nodes);
+		this.dest = getMaxNode(this.nodes);
 	}
 
 	// *********************** PRIVATE ***********************
@@ -58,7 +85,7 @@ public class Graph {
 		for(int i = 1; i < nodes.size(); i++){
 			Node n = nodes.get(i);
 			int l = n.getLabel();
-			if(l < minLabel){
+			if(l < minLabel && l > 0){
 				minLabel = l;
 				retNode = n;
 			}
@@ -67,4 +94,11 @@ public class Graph {
 	}
 
 
+
+	public static void pp(Graph g){
+		ArrayList<Node> nodes = g.getNodes();
+		for(int i=0;i<nodes.size();i++){
+			Node.pp(nodes.get(i));
+		}
+	}
 }
