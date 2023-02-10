@@ -234,17 +234,33 @@ public class TestGraph {
 
 		int d;
 		int nei;
-		for(int i=0;i<diam;i++){
+		for(int i=0;i<diam && i<n;i++){
 			d = (int)(Math.random()*len);
 			nei = (int)(Math.random()*5);
 			nodes.get(d).setDiamond(Node.getDirection(nei));
 		}
 
 		int fixed;
+		ArrayList<Integer> taken = new ArrayList<Integer>();
+		taken.add(1);
+		taken.add(len);
+		int l=1;
+		boolean tkn=true;
 
-		for(int i=0;i<fix;i++){
+		for(int i=0;i<fix && i<n;i++){
 			fixed = (int)(Math.random()*len);
 			nodes.get(fixed).setIsFixed(true);
+			while(tkn){
+				l=(int)(Math.random()*len);
+				for(int j=0;j<taken.size();j++){
+					if(l==taken.get(i)){
+						tkn=false;
+						taken.add(l);
+					}
+				}
+			}
+			tkn=true;
+			nodes.get(fixed).setLabel(l);
 		}
 
 		Graph g = new Graph(nodes,nodes.get(s),nodes.get(t));
