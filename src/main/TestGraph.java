@@ -98,8 +98,10 @@ public class TestGraph {
 
 	// Generate a hexagonal graph with random start & end point
 	// n is the size of the middle line
+	// diam the number max of diamonds
+	// fix the number max of fixed cells
 	// We must have n>4
-	public static Graph testHexa(int n, int diam, int fix){
+	private static Graph testHexa(int n, int diam, int fix){
 		if(n<4){
 			System.out.println("Erreur dans le passage de l'argument de testHexa");
 			return null;
@@ -248,6 +250,19 @@ public class TestGraph {
 		}
 
 		Graph g = new Graph(nodes,nodes.get(s),nodes.get(t));
+		return g;
+	}
+
+	public static Graph test4(int n,int diam, int fix){
+		Graph g = TestGraph.testHexa(n,diam,fix);
+		boolean solution = Algorithm.backtrack(g,true);
+		while(!solution){
+			g = TestGraph.testHexa(n,diam,fix);
+			solution = Algorithm.backtrack(g,true);
+		}
+		Graph.pp(g);
+		g.reset();
+		//Graph.pp(g);
 		return g;
 	}
 }

@@ -27,6 +27,16 @@ public class Graph {
 		this.dest = dest;
 	}
 
+	public Graph(Graph g){
+		this.nodes = new ArrayList<Node>();
+		for(int i=0;i<g.getNodes().size();i++){
+			this.nodes.add(new Node(g.getNodes().get(i), g.getNodes().get(i).id));
+		}
+		this.source = new Node(g.getSource(),g.getSource().id);
+		this.dest = new Node(g.getDestination(),g.getDestination().id);
+
+	}
+
 
 	public ArrayList<Node> getNodes(){
 		return this.nodes;
@@ -50,6 +60,18 @@ public class Graph {
 	public void finalizeGraph(){
 		this.source = getMinNode(this.nodes);
 		this.dest = getMaxNode(this.nodes);
+	}
+
+	public void reset(){
+		for(int i=0;i<this.getNodes().size();i++){
+			if(!this.getNodes().get(i).isFixed()){
+				this.getNodes().get(i).setLabel(-1);
+			}
+			for(int j=0;j<6;j++){
+				this.getNodes().get(i).setNeighbor(this.getNodes().get(i).getNeighbor(Node.getDirection(j)), Node.getDirection(j));
+			}
+		}
+		Graph.pp(this);
 	}
 
 
