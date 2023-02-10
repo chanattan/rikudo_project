@@ -1,3 +1,4 @@
+package src.main;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.WindowEvent;
@@ -78,16 +79,16 @@ public class Visualizer implements KeyListener {
 	@Override
 	public void keyPressed(KeyEvent e) {
 		if (e.getKeyCode() == KeyEvent.VK_LEFT) {
-			global_x[RikudoPane.MODE]+=5*1/zoom[RikudoPane.MODE];
+			global_x[RikudoPane.MODE]+=5*zoom[RikudoPane.MODE];
 		}
 		if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
-			global_x[RikudoPane.MODE]-=5*1/zoom[RikudoPane.MODE];
+			global_x[RikudoPane.MODE]-=5*zoom[RikudoPane.MODE];
 		}
 		if (e.getKeyCode() == KeyEvent.VK_UP) {
-			global_y[RikudoPane.MODE]+=5*1/zoom[RikudoPane.MODE];
+			global_y[RikudoPane.MODE]+=5*zoom[RikudoPane.MODE];
 		}
 		if (e.getKeyCode() == KeyEvent.VK_DOWN) {
-			global_y[RikudoPane.MODE]-=5*1/zoom[RikudoPane.MODE];
+			global_y[RikudoPane.MODE]-=5*zoom[RikudoPane.MODE];
 		}
 		if (e.getKeyCode() == KeyEvent.VK_Z) {
 			zoom[RikudoPane.MODE]-=.05f;

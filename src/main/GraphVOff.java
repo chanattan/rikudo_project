@@ -1,3 +1,4 @@
+package src.main;
 public class GraphVOff extends GraphV {
 	
 	private NodeVOff source, bottom;
@@ -13,7 +14,6 @@ public class GraphVOff extends GraphV {
 		//we consider the source of the graph to be at the center of the screen
 		nodes[graph.getSource().id].setPosition(0, 0);
 		//we want to set the position to other cells relative to the source
-		System.out.println("source : " + g.getSource().id + " label " + g.getSource().getLabel());
 		DFS(g.getSource().id);
 	}
 	
@@ -98,13 +98,11 @@ public class GraphVOff extends GraphV {
     private void DFS_bis_2(int cur, boolean visited[], Node father, Node.DIR dir, Graph exported_graph)
     {
     	NodeV node = this.nodes[cur];
-    	System.out.println("Node exists:" + ((NodeVOff) node).exists() + "node id :" + node.getNode().id + " label " + node.getNode().getLabel());
     	if (!((NodeVOff) node).exists()) return;
     	Node copy = new Node(node.getNode(), i);
     	for (int i = 0; i < 6; i++)
     		copy.setNeighbor(null, Node.getDirection(i));
     	i++;
-    	System.out.println("flabbergasted");
     	if (father != null)
     		Node.linkNodes(father, copy, dir);
     	if (graph.getSource() == node.getNode()) {

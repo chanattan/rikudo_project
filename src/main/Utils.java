@@ -1,12 +1,72 @@
+package src.main;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Polygon;
+import java.awt.Rectangle;
+import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 
 public class Utils {
 	
-	public static void getHexagon(double x, double y) {
+	public static void drawDiamond(Graphics2D g, NodeV node, Node.DIR dir, Color color) {
+		Rectangle2D box = node.getPolygon().getBounds2D();
+		Rectangle2D diamond = new Rectangle();
+		Rectangle2D sub_diamond = new Rectangle();
+		double x = 0;
+		double y = 0;
+		switch (dir) {
+			case E:
+			case EAST:
+				x = box.getX() + box.getWidth()-9;
+				y = box.getY() + box.getHeight()/2d-5;
+				g.setColor(Color.BLUE);
+				diamond.setRect(x, y, 14, 14);
+				sub_diamond.setRect(x+3, y+3, 8, 8);
+				g.fill(diamond);
+				g.setColor(Color.CYAN);
+				g.fill(sub_diamond);
+				break;
+			/*case WEST:
+			case W:
+				x = box.getX()-6;
+				y = box.getY() + box.getHeight()/2d-5;
+				break;*/
+			case NE:
+			case NORTH_EAST:
+				x = box.getX() + box.getWidth() - 30;
+				y = box.getY() + 6;
+				g.setColor(Color.BLUE);
+				diamond.setRect(x, y, 14, 14);
+				sub_diamond.setRect(x+3, y+3, 8, 8);
+				g.fill(diamond);
+				g.setColor(Color.CYAN);
+				g.fill(sub_diamond);
+				break;
+			/*case SE:
+			case SOUTH_EAST:
+//				x = box.getX() + box.getWidth() - 30;
+//				y = box.getY() + box.getHeight() - 20;
+//				diamond.setRect(x, y, 14, 14);
+//				sub_diamond.setRect(x+3, y+3, 8, 8);
+//				g.fill(diamond);
+//				g.fill(sub_diamond);
+				break;*/
+			case NW:
+			case NORTH_WEST:
+				x = box.getX() + 15;
+				y = box.getY() + 6;
+				g.setColor(Color.BLUE);
+				diamond.setRect(x, y, 14, 14);
+				sub_diamond.setRect(x+3, y+3, 8, 8);
+				g.fill(diamond);
+				g.setColor(Color.CYAN);
+				g.fill(sub_diamond);
+				break;
+		}
+		//drawing diamond
+//		g.rotate(Math.toRadians(-45));
+//		g.drawRect((int)box.getX(), (int)box.getY(),(int) box.getWidth(),(int) box.getHeight());
 	}
 	
 	/**

@@ -1,3 +1,4 @@
+package src.main;
 import java.awt.Color;
 import java.awt.Graphics2D;
 
@@ -46,6 +47,7 @@ public class NodeVOff extends NodeV {
 	@Override
 	public void show(Graphics2D g) {
 		if (pol != null || subpol != null) {
+			//node drawing
 			if (!forceColor) {
 				if (this.node.isFixed())
 					c = Color.ORANGE;
@@ -54,6 +56,7 @@ public class NodeVOff extends NodeV {
 				else c = Color.GRAY;
 			}
 			Utils.drawCell(g, this, c);
+			super.drawDiamond(g);
 		}
 	}
 

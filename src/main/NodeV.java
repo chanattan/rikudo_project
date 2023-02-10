@@ -1,3 +1,4 @@
+package src.main;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Polygon;
@@ -51,7 +52,6 @@ public class NodeV {
 	public void setPosition(int x, int y) {
 		this.x = x;
 		this.y = y;
-		System.out.println("val x " + x + " for id " + node.id + " for label " + node.getLabel());
 		this.pol = Utils.getHexagon(x, y, RikudoPane.CELL_SCALE);
 		this.subpol = Utils.getHexagon(x+2, y+2, RikudoPane.CELL_SCALE*.95f);
 	}
@@ -83,12 +83,25 @@ public class NodeV {
 	private Color c;
 	public void show(Graphics2D g) {
 		if (pol != null || subpol != null) {
+			//node drawing
 			if (!forceColor) {
 				if (this.node.isFixed())
 					c = Color.ORANGE;
 				else c = Color.WHITE;
 			}
 			Utils.drawCell(g, this, c);
+		}
+	}
+	
+	public void drawDiamond(Graphics2D g) {
+		//diamond drawing
+		for (int i = 0; i < node.getDiamonds().length; i++) {
+			if (node.getDiamonds()[i]) {
+				Node.DIR dir = Node.getDirection(i);
+
+//				g.drawRect((int) pol.getBounds2D().getX(), (int) pol.getBounds2D().getY(), (int) pol.getBounds2D().getWidth(), (int) pol.getBounds2D().getHeight());
+				Utils.drawDiamond(g, this, dir, c);
+			}
 		}
 	}
 }

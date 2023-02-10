@@ -1,3 +1,4 @@
+package src.main;
 import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Composite;
@@ -28,7 +29,7 @@ public class RikudoPane extends JPanel implements ActionListener, MouseInputList
 	private final int WIDTH = 1200;
 	private final int HEIGHT = 800;
 	public static boolean DEBUG_MODE = false;
-	public static int MODE = 0; //0 : PLAY MODE / 1 : CREATOR MODE
+	public static int MODE = 1; //0 : PLAY MODE / 1 : CREATOR MODE
 	private Rectangle2D button;
 	private boolean load_clicked = false;
 	
@@ -92,11 +93,15 @@ public class RikudoPane extends JPanel implements ActionListener, MouseInputList
 			AffineTransform prev_trans = g.getTransform();
 
 			g.scale(visualizer.zoom[MODE], visualizer.zoom[MODE]);
-			g.translate(visualizer.global_x[MODE]+100, visualizer.global_y[MODE]+100);
+			g.translate(visualizer.global_x[MODE]+440, visualizer.global_y[MODE]+150);
 			transform = g.getTransform();
 			
 			for (NodeV node : graph.getNodesV()) {
 				node.show(g);
+			}
+			
+			for (NodeV node : graph.getNodesV()) {
+				node.drawDiamond(g);
 			}
 			
 			g.setTransform(prev_trans);
@@ -117,6 +122,10 @@ public class RikudoPane extends JPanel implements ActionListener, MouseInputList
 			
 			for (NodeV node : hexagraph.getNodesV()) {
 				node.show(g);
+			}
+			
+			for (NodeV node : hexagraph.getNodesV()) {
+				node.drawDiamond(g);
 			}
 			
 			//gui
@@ -319,8 +328,11 @@ public class RikudoPane extends JPanel implements ActionListener, MouseInputList
 						for (NodeV n : this.hexagraph.getNodesV()) {
 							if (((NodeVOff) n).exists()) {
 								if (n.isHovered(p) && n != node1) { //we found the second node in the dragging
-									node2=n;
-									
+									if (Node.areNeighbors(node1.getNode(), n.getNode())) {
+										node2=n;
+										node2.getNode().setDiamond(node2.getNode().getNeighborDirection(node1.getNode()));
+										System.out.println("diamond set");
+									}
 								}
 							}
 						}

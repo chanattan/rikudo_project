@@ -1,3 +1,7 @@
+package src.main;
+
+import java.util.ArrayList;
+
 public class Node {
 
 	public static int COUNTER = 0;
@@ -104,6 +108,25 @@ public class Node {
 		}
 	}
 
+	// Finds the neighbor with the next label (if it exists, null otherwise)
+	public Node getNextNeighbor(){
+		int label = this.getLabel();
+		for(Node n : this.getNeighbors()){
+			if(n!= null && n.getLabel() == label + 1) { return n;}
+		}
+		return null;
+	}
+
+	// Computes the relative direction of a given neighbor, if it exists
+	public DIR getNeighborDirection(Node n){
+		Node[] neigh = this.getNeighbors();
+		for(int i = 0 ; i < neigh.length; i++){
+			if (n == neigh[i]) { return getDirection(i);}
+		}
+		return null;
+	}
+	
+
 	private void addDiamond(DIR d){
 		if(this.getDiamonds()[dirToIndex(d)]==false){
 			this.getDiamonds()[dirToIndex(d)]=true;
@@ -158,6 +181,17 @@ public class Node {
 		return res;
 	}
 
+	public int getNumberDiamond(){
+		int res = 0;
+		boolean[] d = this.getDiamonds();
+		for(int i=0;i<6;i++){
+			if(d[i] == true){
+				res += 1;
+			}
+		}
+		return res;
+	}
+
 	public Node[] getNeighbors(){
 		return neigh;
 	}
@@ -200,6 +234,32 @@ public class Node {
 				System.err.println("Unknown direction");
 				return null;
 		}
+	}
+
+	/**
+	 * @return Array containing the actual neighbors (removing null)
+	 */
+	public Node[] getActualNeighbors(){
+		ArrayList<Node> retNeigh = new ArrayList<Node>();
+		for(Node n : this.getNeighbors()){
+			if (n != null){
+				retNeigh.add(n);
+			}
+		}
+		return retNeigh.toArray(new Node[0]);
+	}
+
+	/**
+	 * 
+	 * @return Array containing nodes that are linked with a diamond to this node
+	 */
+	public Node[] getActualDiamondNodes(){
+		ArrayList<Node> retDiam = new ArrayList<Node>();
+		boolean[] diams = this.getDiamonds();
+		for(int i = 0; i < diams.length; i++){
+			if(diams[i]) {retDiam.add(this.getNeighbor(Node.getDirection(i)));}
+		}
+		return retDiam.toArray(new Node[0]);
 	}
 
 	// Setters

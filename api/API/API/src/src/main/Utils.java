@@ -1,109 +1,134 @@
 package src.main;
-import java.lang.Math;   
-
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Graphics2D;
+import java.awt.Polygon;
+import java.awt.Rectangle;
+import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 
-public class TestGraph {
-
-	public static Graph test1(){
-		ArrayList<Node> nodes = new ArrayList<Node>();
-
-		// Création des nodes (sans les liées)
-		Node node1 = new Node(1, true);
-		nodes.add(node1);
-
-		for(int i = 0; i < 3; i++){
-			nodes.add(new Node());
+public class Utils {
+	
+	public static void drawDiamond(Graphics2D g, NodeV node, Node.DIR dir, Color color) {
+		Rectangle2D box = node.getPolygon().getBounds2D();
+		Rectangle2D diamond = new Rectangle();
+		Rectangle2D sub_diamond = new Rectangle();
+		double x = 0;
+		double y = 0;
+		switch (dir) {
+			case E:
+			case EAST:
+				x = box.getX() + box.getWidth()-9;
+				y = box.getY() + box.getHeight()/2d-5;
+				g.setColor(Color.BLUE);
+				diamond.setRect(x, y, 14, 14);
+				sub_diamond.setRect(x+3, y+3, 8, 8);
+				g.fill(diamond);
+				g.setColor(Color.CYAN);
+				g.fill(sub_diamond);
+				break;
+			/*case WEST:
+			case W:
+				x = box.getX()-6;
+				y = box.getY() + box.getHeight()/2d-5;
+				break;*/
+			case NE:
+			case NORTH_EAST:
+				x = box.getX() + box.getWidth() - 30;
+				y = box.getY() + 6;
+				g.setColor(Color.BLUE);
+				diamond.setRect(x, y, 14, 14);
+				sub_diamond.setRect(x+3, y+3, 8, 8);
+				g.fill(diamond);
+				g.setColor(Color.CYAN);
+				g.fill(sub_diamond);
+				break;
+			/*case SE:
+			case SOUTH_EAST:
+//				x = box.getX() + box.getWidth() - 30;
+//				y = box.getY() + box.getHeight() - 20;
+//				diamond.setRect(x, y, 14, 14);
+//				sub_diamond.setRect(x+3, y+3, 8, 8);
+//				g.fill(diamond);
+//				g.fill(sub_diamond);
+				break;*/
+			case NW:
+			case NORTH_WEST:
+				x = box.getX() + 15;
+				y = box.getY() + 6;
+				g.setColor(Color.BLUE);
+				diamond.setRect(x, y, 14, 14);
+				sub_diamond.setRect(x+3, y+3, 8, 8);
+				g.fill(diamond);
+				g.setColor(Color.CYAN);
+				g.fill(sub_diamond);
+				break;
 		}
-		Node node5 = new Node(5, true);
-		nodes.add(node5);
-
-		// Liaison des nodes
-		// 1
-		Node.linkNodes(node1, nodes.get(1),Node.DIR.NE);
-		Node.linkNodes(node1, node5,Node.DIR.NW);
-
-		// 2
-		Node.linkNodes(nodes.get(1), nodes.get(2),Node.DIR.NE);
-		Node.linkNodes(nodes.get(1), nodes.get(3),Node.DIR.NW);
-
-		// 4
-		Node.linkNodes(nodes.get(3), nodes.get(2),Node.DIR.E);
-		Node.linkNodes(nodes.get(3), node5,Node.DIR.SW);
-
-		return new Graph(nodes);
+		//drawing diamond
+//		g.rotate(Math.toRadians(-45));
+//		g.drawRect((int)box.getX(), (int)box.getY(),(int) box.getWidth(),(int) box.getHeight());
 	}
-
-	public static Graph test2(){
-		Graph g = new Graph();
-
-		// Creating graph
-		g.addNode(new Node(1, true));
-		g.addNode(new Node());
-		g.addNode(new Node());
-		g.addNode(new Node(4,true));
-
-		// g.updateSourceDest();
-
-		ArrayList<Node> nodes = g.getNodes();
-
-		// Linking
-		Node.linkNodes(nodes.get(1), nodes.get(0),Node.DIR.SE);
-		Node.linkNodes(nodes.get(1), nodes.get(2),Node.DIR.E);
-		Node.linkNodes(nodes.get(1), nodes.get(3),Node.DIR.NE);
-
-		Node.linkNodes(nodes.get(2), nodes.get(0),Node.DIR.SW);
-		Node.linkNodes(nodes.get(2), nodes.get(3),Node.DIR.NW);
-
-		// Diamond (on the right)
-		nodes.get(0).setDiamond(Node.DIR.NE);
-
-
-		g.finalizeGraph();
-
-		return g;
+	
+	/**
+	 * This function draws the cells as the labeled nodes of the graph.
+	 * 
+	 * @param g
+	 * @param x
+	 * @param y
+	 * @param label
+	 * @param scale
+	 */
+	public static void drawCell(Graphics2D g, NodeV node, Color color) {
+		g.setColor(Color.BLACK);
+		Polygon hex = node.getPolygon();
+		Polygon hex2 = node.getSubPolygon();
+		float scale = RikudoPane.CELL_SCALE;
+		int label = node.getNode().getLabel();
+		int x = node.getX();
+		int y = node.getY();
+		drawHexagon(g, hex);
+		g.setColor(color);
+		drawHexagon(g, hex2);
+		g.setColor(Color.BLACK);
+		float f = g.getFont().getSize2D();
+		String val = String.valueOf(label);
+		if (label != -1) {
+			g.setFont(g.getFont().deriveFont(Font.BOLD, 18f));
+			int w = g.getFontMetrics().stringWidth(val);
+			int h = g.getFontMetrics().getHeight();
+			g.drawString(val, (x + (RikudoPane.CELL_WIDTH*scale-w)/2 + 22), (y + ((RikudoPane.CELL_HEIGHT*scale-h) + 7) + g.getFontMetrics().getAscent()));
+			g.setFont(g.getFont().deriveFont(f));
+		}
+		if (RikudoPane.DEBUG_MODE) {
+			g.setColor(Color.RED);
+			g.drawRect(x, y, 3, 3);
+			g.setColor(Color.ORANGE);
+			g.drawRect(x+RikudoPane.CELL_WIDTH/2, y+RikudoPane.CELL_HEIGHT, 4, 4);
+			
+			g.setColor(Color.RED);
+			
+			g.drawString("id " + node.getNode().id, x + 2, y + 2);
+			
+			g.setColor(Color.GREEN);
+			g.drawRect(x+RikudoPane.CELL_WIDTH, y, 4, 4);
+			g.setColor(Color.RED);
+			g.draw(node.pol.getBounds2D());
+		}
 	}
-
-	public static Graph test3(){
-		Graph g = new Graph();
-
-		// Creating graph
-		g.addNode(new Node(1, true));
-		g.addNode(new Node());
-		g.addNode(new Node());
-		g.addNode(new Node(4,true));
-
-		// g.updateSourceDest();
-
-		ArrayList<Node> nodes = g.getNodes();
-
-		// Linking
-		Node.linkNodes(nodes.get(1), nodes.get(0),Node.DIR.SE);
-		Node.linkNodes(nodes.get(1), nodes.get(2),Node.DIR.E);
-		Node.linkNodes(nodes.get(1), nodes.get(3),Node.DIR.NE);
-
-		Node.linkNodes(nodes.get(2), nodes.get(0),Node.DIR.SW);
-		Node.linkNodes(nodes.get(2), nodes.get(3),Node.DIR.NW);
-
-		// Diamond (on the left)
-		nodes.get(0).setDiamond(Node.DIR.NW);
-
-
-		g.finalizeGraph();
-
-		return g;
-	}
-
-	// Generate a hexagonal graph with random start & end point
-	// n is the size of the middle line
-	// diam the number max of diamonds
-	// fix the number max of fixed cells
-	// We must have n>4
-	private static Graph testHexa(int n, int diam, int fix){
+	
+	/**
+	 * Generates an hexagonal graph with a random start (source) and end (bottom) points.
+	 * 
+	 * @param n : the size of the middle row, n must be greater than 4.
+	 */
+	public static Graph getHexaGraph(int n){
 		if(n<4){
 			System.out.println("Erreur dans le passage de l'argument de testHexa");
 			return null;
 		}
+		//tmp reset counter for ids
+		Node.COUNTER=0;
+		
 		ArrayList<Node> nodes = new ArrayList<Node>();
 		int len = n;
 		for(int i=4;i<n;i++){
@@ -220,47 +245,38 @@ public class TestGraph {
 		nodes.get(len-1).setNeighbor(nodes.get(len-2),Node.DIR.WEST);
 		nodes.get(len-1).setNeighbor(nodes.get(len-6),Node.DIR.NORTH_WEST);
 		nodes.get(len-1).setNeighbor(nodes.get(len-5),Node.DIR.NORTH_EAST);
-
-		// To change later
-		int s = (int)(Math.random()*len);
-		int t = (int)(Math.random()*len);
-		while(t==s){
-			t = (int)(Math.random()*len);
-		}
+		/*
+		int s = 0;
+		int t = len-1;
 		nodes.get(s).setLabel(1);
 		nodes.get(s).setIsFixed(true);
 		nodes.get(t).setLabel(len);
-		nodes.get(t).setIsFixed(true);
+		nodes.get(t).setIsFixed(true);*/
 
-		int d;
-		int nei;
-		for(int i=0;i<diam;i++){
-			d = (int)(Math.random()*len);
-			nei = (int)(Math.random()*5);
-			nodes.get(d).setDiamond(Node.getDirection(nei));
-		}
-
-		int fixed;
-
-		for(int i=0;i<fix;i++){
-			fixed = (int)(Math.random()*len);
-			nodes.get(fixed).setIsFixed(true);
-		}
-
-		Graph g = new Graph(nodes,nodes.get(s),nodes.get(t));
+		Graph g = new Graph(nodes);
 		return g;
 	}
-
-	public static Graph test4(int n,int diam, int fix){
-		Graph g = TestGraph.testHexa(n,diam,fix);
-		boolean solution = Algorithm.backtrack(g,true);
-		while(!solution){
-			g = TestGraph.testHexa(n,diam,fix);
-			solution = Algorithm.backtrack(g,true);
-		}
-		Graph.pp(g);
-		g.reset();
-		//Graph.pp(g);
-		return g;
+	
+	private static void drawHexagon(Graphics2D g, Polygon p) {
+		g.fillPolygon(p);
 	}
+    
+	/**
+	 * This function is only for private use, its sole purpose is to give
+	 * primitive to draw hexagons.
+	 * 
+	 * @param g
+	 * @param x
+	 * @param y
+	 * @param scale
+	 */
+	public static Polygon getHexagon(int x, int y, float scale) {
+		Polygon h = new Polygon();	
+		for (int i = 0; i < 6; i++){
+			h.addPoint((int) (x + RikudoPane.CELL_WIDTH*scale * (1.+Math.cos(i * 2 * Math.PI / 6+Math.PI/2))),
+					  (int) (y + RikudoPane.CELL_HEIGHT*scale * (1.+Math.sin(i * 2 * Math.PI / 6+Math.PI/2))));
+		}
+		return h;
+	}
+
 }

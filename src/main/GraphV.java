@@ -1,3 +1,4 @@
+package src.main;
 import java.awt.Color;
 
 /*
