@@ -51,7 +51,98 @@ public class Node {
 	}
 
 
-	// Link Node 1 and 2 on a direction (node n1's direction toward n2) (ex left : n1, right : n2, d = EAST)
+	/**
+	 * @param label : the new label we want to use
+	 * @return Whether this label is valid considering diamonds and neighbors
+	 */
+	public boolean isLegal(int label){
+		Node[] neigh = getActualDiamondNodes();
+		//if there is only -1 around it
+		boolean ism1=true;
+		for(int i=0;i<6;i++){
+			if(this.getNeighbor(getDirection(i)).getLabel()!=-1) ism1=false;
+		}
+		if(ism1) return true;
+		//if there is the predecesor around it
+		boolean isPred=false;
+		for(int i=0;i<6;i++){
+			if(this.getNeighbor(getDirection(i)).getLabel()!=label-1 || this.getNeighbor(getDirection(i)).getLabel()!=label+1) isPred=true;
+		}
+		if(!isPred) return false;
+
+
+		switch(this.nbDiam(this.getDiamonds())){
+			case 0:
+				return true;
+			case 1:
+				// the linked diamond needs to have to be free or to be the predecesor or to be the succesor
+				if(neigh[0].getLabel()==label-1 || neigh[0].getLabel()==-1 || neigh[0].getLabel()==label+1){
+					return true;
+				}
+				else{
+					return false;
+				}
+			case 2:
+				if((neigh[0].getLabel()==label-1 && neigh[1].getLabel()==label+1) 
+				|| (neigh[1].getLabel()==label-1 && neigh[0].getLabel()==label+1)
+				|| (neigh[0].getLabel()==label-1 && neigh[1].getLabel()==label-1) 
+				|| (neigh[1].getLabel()==label-1 && neigh[0].getLabel()==label-1)
+				|| (neigh[0].getLabel()==label-1 && neigh[1].getLabel()==-1)
+				|| (neigh[1].getLabel()==label-1 && neigh[0].getLabel()==-1)){
+					return true;
+				}
+				else{
+					return false;
+				}
+			default:
+				return false;
+		}
+	}
+
+	/**
+	 * Finds the next legal parameter knowing there is {@code}n{@code} nodes in total
+	 * @param n : the number of nodes
+	 * @return the next legal label, -1 if none
+	 */
+	public int findNextLegal(int n){
+		int initLabel = this.getLabel();
+		
+		// From initLabel + 1 to n-1
+		for(int i = initLabel + 1; i < n + 1; i++){
+			if(this.isLegal(initLabel + i)){ return (initLabel + i); }
+		}
+
+		// From 1 to initLabel - 1
+		for(int i = 1; i < initLabel; i++){
+			if(this.isLegal(i)){ return i; }
+		}
+
+		return -1;
+	}
+
+	public int findPreviousLegal(int n){
+		int initLabel = this.getLabel();
+		
+		// From 1 to initLabel - 1
+		for(int i = initLabel - 1; i > 0; i--){
+			if(this.isLegal(i)){ return i; }
+		}
+
+		// From initLabel + 1 to n-1
+		for(int i = n; i > initLabel; i--){
+			if(this.isLegal(i)){ return i; }
+		}
+
+		return -1;
+
+	}
+
+	/**
+	 * Link {@code}Node{@code} 1 and 2 on a direction
+	 * @param n1 : The first {@code}Node{@code}
+	 * @param n2 : The second {@code}Node{@code}
+	 * @param d : The direction between the nodes, from {@code}n1{@code} to {@code}n2{@code}
+	 */
 	public static void linkNodes(Node n1, Node n2, DIR d){
 		n1.setNeighbor(n2, d);
 		n2.setNeighbor(n1, oppositeDirection(d));
