@@ -139,6 +139,16 @@ public class Node {
 
 	// Getters
 
+	public int nbDiam(boolean[] d){
+		int res = 0;
+		for(int i=0;i<6;i++){
+			if(d[i] == true){
+				res += 1;
+			}
+		}
+		return res;
+	}
+
 	public Node[] getNeighbors(){
 		return neigh;
 	}
@@ -204,7 +214,7 @@ public class Node {
 			this.getNeighbor(d).addDiamond(oppositeDirection(d));
 		}
 		else{
-			System.err.print("Link not available for ");System.err.print(this.getLabel());System.err.print(" in direction ");System.err.print(d);
+			System.err.print("Link not available for ");System.err.print(this.getLabel());System.err.print(" in direction ");System.err.println(d);
 		}
 	}
 

@@ -99,7 +99,7 @@ public class TestGraph {
 	// Generate a hexagonal graph with random start & end point
 	// n is the size of the middle line
 	// We must have n>4
-	public static Graph testHexa(int n){
+	public static Graph testHexa(int n, int diam, int fix){
 		if(n<4){
 			System.out.println("Erreur dans le passage de l'argument de testHexa");
 			return null;
@@ -231,6 +231,21 @@ public class TestGraph {
 		nodes.get(s).setIsFixed(true);
 		nodes.get(t).setLabel(len);
 		nodes.get(t).setIsFixed(true);
+
+		int d;
+		int nei;
+		for(int i=0;i<diam;i++){
+			d = (int)(Math.random()*len);
+			nei = (int)(Math.random()*5);
+			nodes.get(d).setDiamond(Node.getDirection(nei));
+		}
+
+		int fixed;
+
+		for(int i=0;i<fix;i++){
+			fixed = (int)(Math.random()*len);
+			nodes.get(fixed).setIsFixed(true);
+		}
 
 		Graph g = new Graph(nodes,nodes.get(s),nodes.get(t));
 		return g;
