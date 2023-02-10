@@ -250,16 +250,20 @@ public class TestGraph {
 		for(int i=0;i<fix && i<n;i++){
 			fixed = (int)(Math.random()*len);
 			nodes.get(fixed).setIsFixed(true);
+			tkn=true;
 			while(tkn){
 				l=(int)(Math.random()*len);
 				for(int j=0;j<taken.size();j++){
 					if(l==taken.get(i)){
 						tkn=false;
-						taken.add(l);
+						break;
 					}
 				}
+				if(tkn){
+					taken.add(l);
+					break;
+				}
 			}
-			tkn=true;
 			nodes.get(fixed).setLabel(l);
 		}
 
