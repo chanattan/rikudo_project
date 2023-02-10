@@ -99,6 +99,7 @@ We created an Hamiltonian circuits.
  
  - Check Solution : considering that the current graph has been played and thus the nodes have been labelled with the hope of being a solution, then the proposed solution is checked using a verification algorithm, the answer is output in the label : is solution.
  
+ Note that the algorithms may take time to run and the software may freeze in the meantime.
  
  ## Creator Mode
  In this mode, you can create your own puzzle (map) to try them on the play mode.
