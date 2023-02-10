@@ -174,7 +174,6 @@ public class Algorithm {
             else{
 				// It's the case when the generation is bad (does not respect the rules)
 				// When this message appears at least one time, you can break the programm to finish it faster
-				System.out.println("Diam not valid");
                 return false;
             }
 
