@@ -131,6 +131,9 @@ public class Node {
 
 	public int findPreviousLegal(int n){
 		int initLabel = this.getLabel();
+		if(initLabel == -1){
+			initLabel = n;
+		}
 		
 		// From 1 to initLabel - 1
 		for(int i = initLabel - 1; i > 0; i--){
