@@ -52,6 +52,58 @@ public class Graph {
 		this.dest = getMaxNode(this.nodes);
 	}
 
+
+	// Verify if the graph is a valid solution to the Rikudo problem
+	public boolean verify(){
+		int n = this.getNodes().size();
+
+
+		// This loop checks if the path is correct (not considering diamonds, only labels incrementing)
+		Node node = this.getSource();
+		for(int i = 1; i < n; i++){
+			// We check if the node is correctly labeled
+			if(node.getLabel() != i) { return false;}
+
+			// We retrieve the next node in the sequence (labeled higher, if it exists)
+			Node nextNode = node.getNextNeighbor();
+			if(nextNode == null) { return false;}
+
+			node = nextNode;			
+		}	
+		// Check normally the last one (destination, should be fine)
+		if(node.getLabel() != n) { return false;}
+
+
+		// Checks if diamonds are respected
+		ArrayList<Node[]> allDiams = this.getDiamonds();
+		for(Node[] pairs : allDiams){
+			// Not labeled 1 apart
+			if(Math.abs(pairs[0].getLabel() - pairs[1].getLabel()) != 1) { return false;}
+		}
+
+		return true;
+	}
+
+
+	/**
+	 * @implNote Will contain twice each diamonds (due to reverse)
+	 * @return ArrayList containing pairs of nodes that are linked with a diamond
+	 */
+	public ArrayList<Node[]> getDiamonds(){
+		ArrayList<Node> nodes = this.getNodes();
+
+		ArrayList<Node[]> allDiams = new ArrayList<Node[]>();
+
+		for(Node n : nodes){
+			Node[] diams = n.getActualDiamondNodes();
+			for(Node n2 : diams){
+				allDiams.add(new Node[] {n, n2});
+			}
+		}
+
+		return allDiams;
+	}
+
 	// *********************** PRIVATE ***********************
 
 	// Computes the last node of the array (with max label)
