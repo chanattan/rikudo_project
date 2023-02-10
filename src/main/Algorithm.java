@@ -16,7 +16,6 @@ public class Algorithm {
 	 * @return Whether a solution was found
 	 */
     public static boolean backtrack(Graph g, boolean boolDiam){ //The first node and the last node have to be labeled 
-        ArrayList<Node> nodes = g.getNodes();
         Node start = g.getSource();
         Node terminal = g.getDestination();
         Boolean hasFound = false;
