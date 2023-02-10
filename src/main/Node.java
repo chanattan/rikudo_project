@@ -60,13 +60,19 @@ public class Node {
 		//if there is only -1 around it
 		boolean ism1=true;
 		for(int i=0;i<6;i++){
-			if(this.getNeighbor(getDirection(i)).getLabel()!=-1) ism1=false;
+			Node ni = this.getNeighbor(getDirection(i));
+			if(ni != null){
+				if(ni.getLabel()!=-1) ism1=false;
+			}
 		}
 		if(ism1) return true;
 		//if there is the predecesor around it
 		boolean isPred=false;
 		for(int i=0;i<6;i++){
-			if(this.getNeighbor(getDirection(i)).getLabel()!=label-1 || this.getNeighbor(getDirection(i)).getLabel()!=label+1) isPred=true;
+			Node ni = this.getNeighbor(getDirection(i));
+			if(ni != null){
+				if(ni.getLabel() == label-1 || ni.getLabel() ==label+1) isPred=true;
+			}
 		}
 		if(!isPred) return false;
 
@@ -106,10 +112,13 @@ public class Node {
 	 */
 	public int findNextLegal(int n){
 		int initLabel = this.getLabel();
+		if(initLabel == -1){
+			initLabel = 1;
+		}
 		
 		// From initLabel + 1 to n-1
 		for(int i = initLabel + 1; i < n + 1; i++){
-			if(this.isLegal(initLabel + i)){ return (initLabel + i); }
+			if(this.isLegal(i)){ return i; }
 		}
 
 		// From 1 to initLabel - 1
