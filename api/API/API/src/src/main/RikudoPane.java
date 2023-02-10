@@ -35,11 +35,13 @@ public class RikudoPane extends JPanel implements ActionListener, MouseInputList
 	private Rectangle2D button_load;
 	private Rectangle2D button_generate;
 	private Rectangle2D button_check;
-	private Rectangle2D button_;
+	private Rectangle2D button_solve;
 	private boolean load_clicked = false;
 	private boolean generate_clicked = false;
 	private boolean check_clicked = false;
+	private boolean solve_clicked = false;
 	private boolean check_solution = false;
+	private boolean is_solved = false;
 	
 	//game constants
 	public static final float CELL_SCALE = .5f; //defines the scale of each node by default is .5f
@@ -67,6 +69,7 @@ public class RikudoPane extends JPanel implements ActionListener, MouseInputList
 		this.button_load = new Rectangle(WIDTH-150, 30, 100, 30);
 		this.button_generate = new Rectangle(WIDTH-150, 70, 100, 30);
 		this.button_check = new Rectangle(WIDTH-180, 30, 150, 30);
+		this.button_solve = new Rectangle(WIDTH-180, 100, 150, 30);
 		
 		this.pane = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
 		Graph hexagraph = Utils.getHexaGraph(7);
@@ -126,11 +129,21 @@ public class RikudoPane extends JPanel implements ActionListener, MouseInputList
 			g.setColor(Color.DARK_GRAY);
 			g.fill(button_check);
 			if (!check_clicked) {
-				g.setColor(Color.CYAN);
-				g.drawString("Is solution : " + check_solution, WIDTH-170, 80);
 				g.setColor(Color.WHITE);
 			} else g.setColor(Color.RED);
 			g.drawString("Check solution", WIDTH-165, 50);
+			g.setColor(Color.CYAN);
+			g.drawString("Is solution : " + check_solution, WIDTH-170, 80);
+			
+			//solve
+			g.setColor(Color.DARK_GRAY);
+			g.fill(button_solve);
+			if (!solve_clicked) {
+				g.setColor(Color.WHITE);
+			} else g.setColor(Color.RED);
+			g.drawString("Solve puzzle", WIDTH-160, 120);
+			g.setColor(Color.CYAN);
+			g.drawString("Is solvable : " + is_solved, WIDTH-170, 150);
 
 			g.setColor(Color.BLACK);
 			g.drawString("PLAY MODE", 15, 20);
@@ -363,6 +376,12 @@ public class RikudoPane extends JPanel implements ActionListener, MouseInputList
 					check_solution = this.graph.getGraph().verify();
 					repaint();
 				}
+				if (button_solve.contains(e.getPoint())) {
+					solve_clicked = true;
+					boolean solved = Algorithm.satSolve(this.graph.getGraph(), true);
+					is_solved = solved;
+					repaint();
+				}
 			}
 		}
 	}
@@ -407,6 +426,7 @@ public class RikudoPane extends JPanel implements ActionListener, MouseInputList
 		}
 		if (RikudoPane.MODE == 1 && e.getButton() == MouseEvent.BUTTON1 && button_load.contains(e.getPoint()) && load_clicked) load_clicked = false;
 		if (RikudoPane.MODE == 0 && e.getButton() == MouseEvent.BUTTON1 && button_check.contains(e.getPoint()) && check_clicked) check_clicked = false;
+		if (RikudoPane.MODE == 0 && e.getButton() == MouseEvent.BUTTON1 && button_solve.contains(e.getPoint()) && solve_clicked) solve_clicked = false;
 	}
 
 	@Override

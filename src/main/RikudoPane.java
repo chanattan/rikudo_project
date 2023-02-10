@@ -17,6 +17,7 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 
+import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 import javax.swing.event.MouseInputListener;
@@ -25,13 +26,22 @@ public class RikudoPane extends JPanel implements ActionListener, MouseInputList
 	
 	/*** CONSTANTS ***/
 	//frame constants
+	private JFrame frame;
 	private Visualizer visualizer;
 	private final int WIDTH = 1200;
 	private final int HEIGHT = 800;
 	public static boolean DEBUG_MODE = false;
-	public static int MODE = 1; //0 : PLAY MODE / 1 : CREATOR MODE
-	private Rectangle2D button;
+	public static int MODE = 0; //0 : PLAY MODE / 1 : CREATOR MODE
+	private Rectangle2D button_load;
+	private Rectangle2D button_generate;
+	private Rectangle2D button_check;
+	private Rectangle2D button_solve;
 	private boolean load_clicked = false;
+	private boolean generate_clicked = false;
+	private boolean check_clicked = false;
+	private boolean solve_clicked = false;
+	private boolean check_solution = false;
+	private boolean is_solved = false;
 	
 	//game constants
 	public static final float CELL_SCALE = .5f; //defines the scale of each node by default is .5f
@@ -47,15 +57,19 @@ public class RikudoPane extends JPanel implements ActionListener, MouseInputList
 	private BufferedImage pane;
 	private GraphVOff hexagraph;
 	
-	public RikudoPane(Visualizer visualizer, GraphV graph) { //should be Rikudo rikudo
+	public RikudoPane(JFrame frame, Visualizer visualizer, GraphV graph) { //should be Rikudo rikudo
 		super();
+		this.frame = frame;
 		this.visualizer = visualizer;
 		this.graph = graph;
 		this.addMouseListener(this);
 		this.addMouseMotionListener(this);
 		this.setPreferredSize(new Dimension(WIDTH, HEIGHT));
 		this.setBackground(Color.WHITE);
-		this.button = new Rectangle(WIDTH-150, 30, 100, 30);
+		this.button_load = new Rectangle(WIDTH-150, 30, 100, 30);
+		this.button_generate = new Rectangle(WIDTH-150, 70, 100, 30);
+		this.button_check = new Rectangle(WIDTH-180, 30, 150, 30);
+		this.button_solve = new Rectangle(WIDTH-180, 100, 150, 30);
 		
 		this.pane = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
 		Graph hexagraph = Utils.getHexaGraph(7);
@@ -65,9 +79,13 @@ public class RikudoPane extends JPanel implements ActionListener, MouseInputList
 		timer.start();
 	}
 	
-	public void loadCreator(int n) {
-		Graph hexagraph = Utils.getHexaGraph(n);
-		this.hexagraph = new GraphVOff(hexagraph);
+	public void loadCreator(Graph graph, boolean fill) {
+		this.hexagraph = new GraphVOff(graph);	
+		if (fill) {
+			for (NodeV n : this.hexagraph.getNodesV()) {
+				((NodeVOff) n).toggleOn();
+			}
+		}
 	}
 	
 	public void loadGraph(Graph g) {
@@ -105,6 +123,27 @@ public class RikudoPane extends JPanel implements ActionListener, MouseInputList
 			}
 			
 			g.setTransform(prev_trans);
+			
+			//gui
+			//check
+			g.setColor(Color.DARK_GRAY);
+			g.fill(button_check);
+			if (!check_clicked) {
+				g.setColor(Color.WHITE);
+			} else g.setColor(Color.RED);
+			g.drawString("Check solution", WIDTH-165, 50);
+			g.setColor(Color.CYAN);
+			g.drawString("Is solution : " + check_solution, WIDTH-170, 80);
+			
+			//solve
+			g.setColor(Color.DARK_GRAY);
+			g.fill(button_solve);
+			if (!solve_clicked) {
+				g.setColor(Color.WHITE);
+			} else g.setColor(Color.RED);
+			g.drawString("Solve puzzle", WIDTH-160, 120);
+			g.setColor(Color.CYAN);
+			g.drawString("Is solvable : " + is_solved, WIDTH-170, 150);
 
 			g.setColor(Color.BLACK);
 			g.drawString("PLAY MODE", 15, 20);
@@ -136,13 +175,22 @@ public class RikudoPane extends JPanel implements ActionListener, MouseInputList
 			g.drawString("CREATOR MODE", 15, 20);
 			
 			//menu
+			//load
 			g.setColor(Color.DARK_GRAY);
 			g.setFont(g.getFont().deriveFont(14f));
-			g.fill(button);
+			g.fill(button_load);
 			if (!load_clicked)
 				g.setColor(Color.WHITE);
 			else g.setColor(Color.RED);
 			g.drawString("Load", WIDTH-120, 50);
+			
+			//generate
+			g.setColor(Color.DARK_GRAY);
+			g.fill(button_generate);
+			if (!generate_clicked)
+				g.setColor(Color.WHITE);
+			else g.setColor(Color.RED);
+			g.drawString("Generate", WIDTH-135, 90);
 			
 			//help
 			
@@ -182,16 +230,20 @@ public class RikudoPane extends JPanel implements ActionListener, MouseInputList
 	public void mouseClicked(MouseEvent e) {
 		System.out.println(e.getX() + " " + e.getY());
 		if (MODE == 0) {
-			for (NodeV node : graph.getNodesV()) {
-				if (transform != null) {
-					try {
-						Point2D p = transform.inverseTransform(e.getPoint(), null);
-						if (node.isHovered(p)) {
-							if (!node.getNode().isFixed())
-								node.getNode().setLabel((node.getNode().getLabel()+1)%graph.getNodesV().length);
+			if (e.getButton() == MouseEvent.BUTTON1) {
+				for (NodeV node : graph.getNodesV()) {
+					if (transform != null) {
+						try {
+							Point2D p = transform.inverseTransform(e.getPoint(), null);
+							if (!e.isControlDown()) {
+								if (node.isHovered(p)) {
+									if (!node.getNode().isFixed())
+										node.getNode().setLabel((node.getNode().getLabel()+1)%graph.getNodesV().length);
+								}
+							} else if (node.isHovered(p)) node.getNode().setLabel(Math.max(0, node.getNode().getLabel()-1));
+						} catch (NoninvertibleTransformException e1) {
+							e1.printStackTrace();
 						}
-					} catch (NoninvertibleTransformException e1) {
-						e1.printStackTrace();
 					}
 				}
 			}
@@ -276,7 +328,9 @@ public class RikudoPane extends JPanel implements ActionListener, MouseInputList
 		}
 	}
 	
-	private Point starting_point;
+	/*
+	 * Diamonds mechanics
+	 */
 	private int drag = 0;
 	private NodeV node1, node2;
 
@@ -286,7 +340,6 @@ public class RikudoPane extends JPanel implements ActionListener, MouseInputList
 			if (e.getButton() == MouseEvent.BUTTON1) {
 				try {
 					Point2D p = transform.inverseTransform(e.getPoint(), null);
-					starting_point = e.getPoint();
 					drag = 1;
 					for (NodeV n : this.hexagraph.getNodesV()) {
 						if (((NodeVOff) n).exists() && n.isHovered(p)) {
@@ -294,15 +347,40 @@ public class RikudoPane extends JPanel implements ActionListener, MouseInputList
 							node1=n;
 						}
 					}
-					if (button.contains(e.getPoint())) {
+					if (button_load.contains(e.getPoint())) {
 						load_clicked = true;
-						System.out.println(Visualizer.prefix + "Loading generated map.");
 						Graph built_graph = hexagraph.export();
-						if (built_graph != null)
+						if (built_graph != null) {
+							System.out.println(Visualizer.prefix + "Loading generated map.");
 							this.loadGraph(built_graph);
+						}
+					}
+					if (button_generate.contains(e.getPoint())) {
+						generate_clicked = true;
+						GeneratorDialog gd = new GeneratorDialog(frame, this);
+						Graph generated_graph = gd.getGraph();
+						if (generated_graph != null) {
+							System.out.println(Visualizer.prefix + "Generating map with at least one solution.");
+							this.loadCreator(generated_graph, true);
+						}
+						generate_clicked = false;
 					}
 				} catch (NoninvertibleTransformException e1) {
 					e1.printStackTrace();
+				}
+			}
+		} else if (MODE == 0) {
+			if (e.getButton() == MouseEvent.BUTTON1) {
+				if (button_check.contains(e.getPoint())) {
+					check_clicked = true;
+					check_solution = this.graph.getGraph().verify();
+					repaint();
+				}
+				if (button_solve.contains(e.getPoint())) {
+					solve_clicked = true;
+					boolean solved = Algorithm.satSolve(this.graph.getGraph(), true);
+					is_solved = solved;
+					repaint();
 				}
 			}
 		}
@@ -330,8 +408,11 @@ public class RikudoPane extends JPanel implements ActionListener, MouseInputList
 								if (n.isHovered(p) && n != node1) { //we found the second node in the dragging
 									if (Node.areNeighbors(node1.getNode(), n.getNode())) {
 										node2=n;
-										node2.getNode().setDiamond(node2.getNode().getNeighborDirection(node1.getNode()));
-										System.out.println("diamond set");
+										if (Node.areDiamonded(node1.getNode(), node2.getNode())) {
+											node2.getNode().removeDiamond(node2.getNode().getNeighborDirection(node1.getNode()));
+										} else {
+											node2.getNode().setDiamond(node2.getNode().getNeighborDirection(node1.getNode()));
+										}
 									}
 								}
 							}
@@ -343,7 +424,9 @@ public class RikudoPane extends JPanel implements ActionListener, MouseInputList
 			}
 			drag = 0;
 		}
-		if (RikudoPane.MODE == 1 && e.getButton() == MouseEvent.BUTTON1 && button.contains(e.getPoint()) && load_clicked) load_clicked = false;
+		if (RikudoPane.MODE == 1 && e.getButton() == MouseEvent.BUTTON1 && button_load.contains(e.getPoint()) && load_clicked) load_clicked = false;
+		if (RikudoPane.MODE == 0 && e.getButton() == MouseEvent.BUTTON1 && button_check.contains(e.getPoint()) && check_clicked) check_clicked = false;
+		if (RikudoPane.MODE == 0 && e.getButton() == MouseEvent.BUTTON1 && button_solve.contains(e.getPoint()) && solve_clicked) solve_clicked = false;
 	}
 
 	@Override

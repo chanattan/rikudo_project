@@ -9,6 +9,19 @@ import java.util.ArrayList;
 
 public class Utils {
 	
+	public static Graph generateHexaMap(int n,int diam, int fix){
+		Graph g = TestGraph.testHexa(n,diam,fix);
+		boolean solution = Algorithm.backtrack(g,true);
+		while(!solution){
+			g = TestGraph.testHexa(n,diam,fix);
+			solution = Algorithm.backtrack(g,true);
+		}
+		Graph.pp(g);
+		g.reset();
+		//Graph.pp(g);
+		return g;
+	}
+	
 	public static void drawDiamond(Graphics2D g, NodeV node, Node.DIR dir, Color color) {
 		Rectangle2D box = node.getPolygon().getBounds2D();
 		Rectangle2D diamond = new Rectangle();

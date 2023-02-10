@@ -9,13 +9,9 @@ import org.sat4j.specs.ISolver;
 
 public class Algorithm {
     
-	/**
-	 * General backtrack algorithm. It modifies the graph.
-	 * @param g : a {@code}Graph{@code}
-	 * @param boolDiam whether you should consider diamonds
-	 * @return Whether a solution was found
-	 */
+    //General backtrack algorithm
     public static boolean backtrack(Graph g, boolean boolDiam){ //The first node and the last node have to be labeled 
+        ArrayList<Node> nodes = g.getNodes();
         Node start = g.getSource();
         Node terminal = g.getDestination();
         Boolean hasFound = false;
@@ -174,6 +170,7 @@ public class Algorithm {
             else{
 				// It's the case when the generation is bad (does not respect the rules)
 				// When this message appears at least one time, you can break the programm to finish it faster
+				System.out.println("Diam not valid");
                 return false;
             }
 
@@ -186,22 +183,12 @@ public class Algorithm {
 	// ************************************* SAT Solver *************************************
 
 
-	/**
-	 * Solve Rikudo with a SAT-Solver (considering diamonds)
-	 * @param g : a {@code}Graph{@code}
-	 * @return Whether a solution was found
-	 */
+	// Solve Rikudo with a SAT-Solver (base with diamond)
 	public static boolean satSolve(Graph g){
 		return satSolve(g, true);
 	}
 
 	// Solve Rikudo. Allow for a diamond-less solve
-	/**
-	 * Solve Rikudo with a SAT-Solver
-	 * @param g : a {@code}Graph{@code}
-	 * @param withDiamond : whether diamonds should be considered
-	 * @return
-	 */
 	public static boolean satSolve(Graph g, boolean withDiamond){
 
 		ArrayList<Node> nodes = g.getNodes();
@@ -226,11 +213,6 @@ public class Algorithm {
 	}
 
 
-	/**
-	 * Solve a Dimacs CNF 
-	 * @param dimacs : ArrayList of clauses represented as an ArrayList of Integers
-	 * @return a model verifying the formula, {@code}null{@code} if there is none
-	 */
 	private static int[] solveDimacs(ArrayList<ArrayList<Integer>> dimacs){
 
 		int m = dimacs.size(); // Number of clauses
@@ -267,11 +249,6 @@ public class Algorithm {
 		}
 	}
 
-	/**
-	 * Convert a model that satisfy the problem as a graph
-	 * @param model : the computed model
-	 * @param nodes : a list of {@code}Node{@code}
-	 */
 	private static void modelToGraph(int[] model, ArrayList<Node> nodes){
 		for(int k : model){
 			// Negative vars are the one that are false 
@@ -289,11 +266,6 @@ public class Algorithm {
 	 * It converts a Rikudo problem to Dimacs CNF form
 	 * i.e. it will be converted as a collection of clauses, clauses being written as an collections of integers different from 0
 	 * We won't be writing the 0s separating clauses.
-	 */
-	/**
-	 * Convert a {@code}Graph{@code} to Dimacs CNF, not considering diamonds
-	 * @param g : a {@code}Graph{@code}
-	 * @return a Dimacs CNF
 	 */
 	private static ArrayList<ArrayList<Integer>> graphToDimacs(Graph g){
 		
@@ -324,11 +296,7 @@ public class Algorithm {
 		return cnf;
 	}
 
-	/**
-	 * Convert a {@code}Graph{@code} to Dimacs CNF
-	 * @param g : a {@code}Graph{@code}
-	 * @return a Dimacs CNF
-	 */
+
 	private static ArrayList<ArrayList<Integer>> graphToDimacsDiamond(Graph g){
 		ArrayList<Node> nodes = g.getNodes();
 		ArrayList<ArrayList<Integer>> cnf = graphToDimacs(g);
@@ -342,21 +310,10 @@ public class Algorithm {
 
 	// Bijection (and inverse) used to map x_i_v to numbers for Dimacs
 	// We can't have 0 as a var so the bijection is from N * N -> N\0
-	/**
-	 * Bijection from N*N to N\0
-	 * @param i : an {@code}int{@code}
-	 * @param j : an {@code}int{@code}
-	 * @return an {@code}int{@code}
-	 */
 	private static int bijection(int i, int j){
 		return (i+j)*(i+j+1)/2 + j + 1;
 	}
 
-	/**
-	 * Inverse of the bijection. 
-	 * @param n : an {@code}int{@code}
-	 * @return A size 2 array
-	 */
 	private static int[] inverseBijection(int n){
 		int k = 0;
 		while (k*(k+1) <= 2*(n - 1)){
@@ -372,11 +329,6 @@ public class Algorithm {
 
 
 	// vertices are present once (we do it for all v here)
-	/**
-	 * Encodes the fact that vertices are present once
-	 * @param nodes : the {@code}Graph{@code}'s {@code}Node{@code}
-	 * @return a Dimacs CNF
-	 */
 	private static ArrayList<ArrayList<Integer>> vPreciselyOnce(ArrayList<Node> nodes){
 		ArrayList<ArrayList<Integer>> cnf = new ArrayList<ArrayList<Integer>>();
 
@@ -407,11 +359,6 @@ public class Algorithm {
 
 
 	// Label i is only given once
-	/**
-	 * Encodes the fact that labels are present once
-	 * @param nodes : the {@code}Graph{@code}'s {@code}Node{@code}
-	 * @return a Dimacs CNF
-	 */
 	private static ArrayList<ArrayList<Integer>> iPreciselyOnce(ArrayList<Node> nodes){
 		ArrayList<ArrayList<Integer>> cnf = new ArrayList<ArrayList<Integer>>();
 
@@ -441,11 +388,6 @@ public class Algorithm {
 
 
 	// Every summit have its neighbors labeled correctly
-	/**
-	 * Encodes the fact vertices have a neighboring vertex labeled 1 higher
-	 * @param nodes : the {@code}Graph{@code}'s {@code}Node{@code}
-	 * @return a Dimacs CNF
-	 */
 	private static ArrayList<ArrayList<Integer>> vConsecutiveAdjacent(ArrayList<Node> nodes){
 		ArrayList<ArrayList<Integer>> cnf = new ArrayList<ArrayList<Integer>>();
 
@@ -469,11 +411,6 @@ public class Algorithm {
 	}
 
 	// Creates clauses to force fixed vertices (clauses are just 1 litteral)
-	/**
-	 * Encodes the fact that some vertices are fixed as constraint
-	 * @param nodes : the {@code}Graph{@code}'s {@code}Node{@code}
-	 * @return a Dimacs CNF
-	 */
 	private static ArrayList<ArrayList<Integer>> vFixed(ArrayList<Node> nodes){
 		ArrayList<ArrayList<Integer>> cnf = new ArrayList<ArrayList<Integer>>();
 
@@ -491,11 +428,6 @@ public class Algorithm {
 	}
 
 
-	/**
-	 * Encodes the diamonds
-	 * @param nodes : the {@code}Graph{@code}'s {@code}Node{@code}
-	 * @return a Dimacs CNF
-	 */
 	private static ArrayList<ArrayList<Integer>> vwDiamond(ArrayList<Node> nodes){
 		ArrayList<ArrayList<Integer>> cnf = new ArrayList<ArrayList<Integer>>();
 

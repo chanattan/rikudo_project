@@ -61,7 +61,8 @@ public class CreatorDialog extends JDialog {
 				try {
 					if (textField.getText().trim().isEmpty()) throw new NumberFormatException();
 					k = Integer.valueOf(textField.getText());
-					p.loadCreator(k);
+					Graph hexagraph = Utils.getHexaGraph(k);
+					p.loadCreator(hexagraph, false);
 					dispose();
 				} catch (NumberFormatException e1) {
 					System.err.println(Visualizer.prefix + "Error, input a valid number for the width of the hexagon.");

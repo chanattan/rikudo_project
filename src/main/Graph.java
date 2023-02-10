@@ -10,24 +10,28 @@ public class Graph {
 
 
 	public Graph(){
+		Node.COUNTER = 0;
 		this.nodes = new ArrayList<Node>();
 		this.source = null;
 		this.dest = null;
 	}
 	
 	public Graph(ArrayList<Node> nodes){
+		Node.COUNTER = 0;
 		this.nodes = nodes;
 		this.finalizeGraph();
 	}
 
 	// No sanity check on actual first and last
 	public Graph(ArrayList<Node> nodes, Node source, Node dest){
+		Node.COUNTER = 0;
 		this.nodes = nodes;
 		this.source = source;
 		this.dest = dest;
 	}
 
 	public Graph(Graph g){
+		Node.COUNTER = 0;
 		this.nodes = new ArrayList<Node>();
 		for(int i=0;i<g.getNodes().size();i++){
 			this.nodes.add(new Node(g.getNodes().get(i), g.getNodes().get(i).id));
@@ -65,17 +69,11 @@ public class Graph {
 
 	// Finalize the graph (MANDATORY when created with empty constructor)
 	// Sets the source and destination
-	/**
-	 * Finalize a graph, initializing the source and destination
-	 */
 	public void finalizeGraph(){
 		this.source = getMinNode(this.nodes);
 		this.dest = getMaxNode(this.nodes);
 	}
 
-	/**
-	 * Reset a graph, changing all (non fixed) labels to -1
-	 */
 	public void reset(){
 		for(int i=0;i<this.getNodes().size();i++){
 			if(!this.getNodes().get(i).isFixed()){
@@ -89,10 +87,7 @@ public class Graph {
 	}
 
 
-	/**
-	 * Verify if the graph is a valid solution to the Rikudo problem
-	 * @return Whether the graph is correctly labeled
-	 */
+	// Verify if the graph is a valid solution to the Rikudo problem
 	public boolean verify(){
 		int n = this.getNodes().size();
 
@@ -125,7 +120,6 @@ public class Graph {
 
 
 	/**
-	 * Gets all diamond-separated vertices as pairs
 	 * @implNote Will contain twice each diamonds (due to reverse)
 	 * @return ArrayList containing pairs of nodes that are linked with a diamond
 	 */
@@ -146,11 +140,7 @@ public class Graph {
 
 	// *********************** PRIVATE ***********************
 
-	/**
-	 * Computes the last node of the array (with max label)
-	 * @param nodes : the {@code}Node{@code}
-	 * @return the {@code}Node{@code} with highest label
-	 */
+	// Computes the last node of the array (with max label)
 	private static Node getMaxNode(ArrayList<Node> nodes){
 		int maxLabel = -1;
 		Node retNode = null;
@@ -164,11 +154,7 @@ public class Graph {
 		return retNode;
 	}
 
-	/**
-	 * Computes the first node of the array (with min label)
-	 * @param nodes : the {@code}Node{@code}
-	 * @return the {@code}Node{@code} with lowest label
-	 */
+	// Computes the first node of the array (with min label)
 	private static Node getMinNode(ArrayList<Node> nodes){
 		Node retNode = nodes.get(0);
 		int minLabel = retNode.getLabel();
@@ -184,10 +170,7 @@ public class Graph {
 	}
 
 
-	/**
-	 * Pretty prints the whole {@code}Graph{@code}
-	 * @param g : a {@code}Graph{@code}
-	 */
+
 	public static void pp(Graph g){
 		ArrayList<Node> nodes = g.getNodes();
 		for(int i=0;i<nodes.size();i++){

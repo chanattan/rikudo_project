@@ -99,7 +99,7 @@ public class TestGraph {
 	// diam the number max of diamonds
 	// fix the number max of fixed cells
 	// We must have n>4
-	private static Graph testHexa(int n, int diam, int fix){
+	static Graph testHexa(int n, int diam, int fix){
 		if(n<4){
 			System.out.println("Erreur dans le passage de l'argument de testHexa");
 			return null;
@@ -234,7 +234,7 @@ public class TestGraph {
 
 		int d;
 		int nei;
-		for(int i=0;i<diam && i<n;i++){
+		for(int i=0;i<diam;i++){
 			d = (int)(Math.random()*len);
 			nei = (int)(Math.random()*5);
 			nodes.get(d).setDiamond(Node.getDirection(nei));
@@ -242,26 +242,12 @@ public class TestGraph {
 
 		int fixed;
 
-		for(int i=0;i<fix && i<n-2;i++){
+		for(int i=0;i<fix;i++){
 			fixed = (int)(Math.random()*len);
-			if(!nodes.get(fixed).isFixed()) nodes.get(fixed).setIsFixed(true);
-			else i--;
+			nodes.get(fixed).setIsFixed(true);
 		}
 
 		Graph g = new Graph(nodes,nodes.get(s),nodes.get(t));
-		return g;
-	}
-
-	public static Graph test4(int n,int diam, int fix){
-		Graph g = TestGraph.testHexa(n,diam,fix);
-		boolean solution = Algorithm.backtrack(g,true);
-		while(!solution){
-			g = TestGraph.testHexa(n,diam,fix);
-			solution = Algorithm.backtrack(g,true);
-		}
-		Graph.pp(g);
-		g.reset();
-		//Graph.pp(g);
 		return g;
 	}
 }
