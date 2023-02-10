@@ -214,6 +214,33 @@ public class Node {
 		System.out.println("\n");
 	}
 
+
+	/**
+	 * Computes a recommanded label based on the neighbors.
+	 * It is to be used by the GUI as a starter number.
+	 * It is returning the max + 1 of the neighboring labels, priorizing diamonds
+	 * @implNote May return n+1 where n is the number of nodes
+	 * @return A int representing the recommanded label
+	 */
+	public int guessLabel(){
+		if(this.getNumberDiamond() > 0){
+			Node[] actDiam = this.getActualDiamondNodes();
+			for(Node n : actDiam){
+				// If a diamond has a label already set (ie != -1)
+				if(n.getLabel() != -1){
+					return n.getLabel() + 1;
+				}
+			}	
+		}
+		Node[] actNeigh = this.getActualNeighbors();
+		int maxLab = -1;
+		for(Node n : actNeigh){
+			int lab = n.getLabel();
+			if(lab != -1 && lab > maxLab) { maxLab = lab;}
+		}
+		return maxLab + 1;
+	}
+
 	// Getters
 
 	public int nbDiam(boolean[] d){
