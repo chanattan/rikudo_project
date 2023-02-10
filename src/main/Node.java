@@ -51,6 +51,51 @@ public class Node {
 	}
 
 
+	//check if we can set label for this node
+	public boolean isLegal(int label){
+		Node[] neigh = getActualDiamondNodes();
+		//if there is only -1 around it
+		boolean ism1=true;
+		for(int i=0;i<6;i++){
+			if(this.getNeighbor(getDirection(i)).getLabel()!=-1) ism1=false;
+		}
+		if(ism1) return true;
+		//if there is the predecesor around it
+		boolean isPred=false;
+		for(int i=0;i<6;i++){
+			if(this.getNeighbor(getDirection(i)).getLabel()!=label-1 || this.getNeighbor(getDirection(i)).getLabel()!=label+1) isPred=true;
+		}
+		if(!isPred) return false;
+
+
+		switch(this.nbDiam(this.getDiamonds())){
+			case 0:
+				return true;
+			case 1:
+				// the linked diamond needs to have to be free or to be the predecesor or to be the succesor
+				if(neigh[0].getLabel()==label-1 || neigh[0].getLabel()==-1 || neigh[0].getLabel()==label+1){
+					return true;
+				}
+				else{
+					return false;
+				}
+			case 2:
+				if((neigh[0].getLabel()==label-1 && neigh[1].getLabel()==label+1) 
+				|| (neigh[1].getLabel()==label-1 && neigh[0].getLabel()==label+1)
+				|| (neigh[0].getLabel()==label-1 && neigh[1].getLabel()==label-1) 
+				|| (neigh[1].getLabel()==label-1 && neigh[0].getLabel()==label-1)
+				|| (neigh[0].getLabel()==label-1 && neigh[1].getLabel()==-1)
+				|| (neigh[1].getLabel()==label-1 && neigh[0].getLabel()==-1)){
+					return true;
+				}
+				else{
+					return false;
+				}
+			default:
+				return false;
+		}
+	}
+
 	// Link Node 1 and 2 on a direction (node n1's direction toward n2) (ex left : n1, right : n2, d = EAST)
 	public static void linkNodes(Node n1, Node n2, DIR d){
 		n1.setNeighbor(n2, d);
