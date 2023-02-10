@@ -84,3 +84,42 @@ The idea is that we can solve the problem by dividing it on these two parts :
 Thus, we can plug each circuit of the holes on the bigger circuit.
 We created an Hamiltonian circuits.
 
+# Interface
+
+ We developed a GUI interface with Java using Swing and AWT to draw the hexagon maps and interact with the algorithms.
+ The software first opens in *PLAY MODE* which is where you can play around with one graph.
+ In order to switch between the modes you can use the key **M**.
+ 
+ ## Play Mode
+  In this mode, you have several buttons :
+ 
+ - Solve SAT : considering the current graph on the play mode it tries to solve the graph using SAT problem, if the graph has a solution the label is solvable must print the value true and the label of the nodes of the graph should be changed to the solution. If there is no solution then is solvable prints false and the graph should not be changed or partially.
+ 
+ - Solve BACKTRACK : this does the same thing as the Solve SAT but tries to solve the graph using backtracking, the solution might be slow to output on the graph.
+ 
+ - Check Solution : considering that the current graph has been played and thus the nodes have been labelled with the hope of being a solution, then the proposed solution is checked using a verification algorithm, the answer is output in the label : is solution.
+ 
+ 
+ ## Creator Mode
+ In this mode, you can create your own puzzle (map) to try them on the play mode.
+ You have several buttons :
+ 
+ - Load : it loads the created graph into the play mode.
+ 
+ - Generate : considering the parameters given into the dialog that pops up, it generates an hexagonal graph with the given parameters that has at least one solution. (it might show some problem at the moment, it needs to be fixed)
+ 
+ The commands for creation are shown on the panel at the bottom right of the screen,
+ one command was still not displayed : **Left or Right+Alt click to set source/destination nodes**. The source is red and the destination is green.
+ 
+ ## Extensions/Remaining work
+ This section is about the considered extensions and the remaining work that could have been implemented if given more time.
+ 
+ - Fixing the padding in the graph that are drawn to the screen.
+ - Fixing Generation and adding more parameters for more complex puzzles.
+ - Fixing labelling in the creator mode.
+ - Making the software more interactive and easier to use for the user.
+ - Implementing loading bars for the running algorithms that could take time.
+ - Implementing dragging to move the graph in the software.
+ - Making the play mode to be as similar as the rikudo website's but better.
+ - Going further in the implementation of the algorithms for them to be resilient to all graphs.
+ 
