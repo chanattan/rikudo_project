@@ -111,17 +111,16 @@ We created an Hamiltonian circuits.
  - Generate : considering the parameters given into the dialog that pops up, it generates an hexagonal graph with the given parameters that has at least one solution. (it might show some problem at the moment, it needs to be fixed)
  
  The commands for creation are shown on the panel at the bottom right of the screen,
- one command was still not displayed : **Left or Right+Alt click to set source/destination nodes**. The source is red and the destination is green.
+ you can drag your mouse around to drag the graph.
  
  ## Extensions/Remaining work
  This section is about the considered extensions and the remaining work that could have been implemented if given more time.
  
  - Fixing the padding in the graph that are drawn to the screen.
- - Fixing Generation and adding more parameters for more complex puzzles.
+ - Adding more parameters for more complex puzzles in the generator.
  - Fixing labelling in the creator mode.
  - Making the software more interactive and easier to use for the user.
  - Implementing loading bars for the running algorithms that could take time.
- - Implementing dragging to move the graph in the software.
  - Making the play mode to be as similar as the rikudo website's but better.
  - Going further in the implementation of the algorithms for them to be resilient to all graphs.
  
