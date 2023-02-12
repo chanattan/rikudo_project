@@ -89,7 +89,8 @@ We created an Hamiltonian circuits.
  We developed a GUI interface with Java using Swing and AWT to draw the hexagon maps and interact with the algorithms.
  You can run it using the command `java -jar RikudoCreatorJGC.jar` in the command line.
  The software first opens in *PLAY MODE* which is where you can play around with one graph.
- In order to switch between the modes you can use the key **M**.
+ In order to switch between the modes you can use the **M** key.
+ You can drag your mouse around to drag the graph.
  
  ## Play Mode
   In this mode, you have several buttons :
@@ -98,7 +99,7 @@ We created an Hamiltonian circuits.
  
  - Solve BACKTRACK : this does the same thing as the Solve SAT but tries to solve the graph using backtracking, the solution might be slow to output on the graph.
  
- - Check Solution : considering that the current graph has been played and thus the nodes have been labelled with the hope of being a solution, then the proposed solution is checked using a verification algorithm, the answer is output in the label : is solution.
+ - Check Solution : considering that the current graph has been played and thus the nodes have been labelled with the hope of being a solution, then the proposed solution is checked using a verification algorithm, the answer is outputted on the label : is solution.
  
  Note that the algorithms may take time to run and the software may freeze in the meantime.
  
@@ -110,8 +111,7 @@ We created an Hamiltonian circuits.
  
  - Generate : considering the parameters given into the dialog that pops up, it generates an hexagonal graph with the given parameters that has at least one solution.
  
- The commands for creation are shown on the panel at the bottom right of the screen,
- you can drag your mouse around to drag the graph.
+ The commands for creation are shown on the panel at the bottom right of the screen.
  
  ## Extensions/Remaining work
  This section is about the considered extensions and the remaining work that could have been implemented if given more time.
