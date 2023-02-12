@@ -10,18 +10,27 @@ import java.util.ArrayList;
 public class Utils {
 	
 	public static Graph generateHexaMap(int n,int diam, int fix){
+		System.out.println(Visualizer.prefix + "Starting the hexamap generation (w="+n+", d="+diam+", f="+fix+") may take some time, please wait.");
 		Graph g = TestGraph.testHexa(n,diam,fix);
 		boolean solution = Algorithm.backtrack(g,true);
 		while(!solution){
+			System.out.println(Visualizer.prefix + "[Hexamap Generator] searching a new map with a solution...");
 			g = TestGraph.testHexa(n,diam,fix);
 			solution = Algorithm.backtrack(g,true);
 		}
-		Graph.pp(g);
+//		Graph.pp(g);
 		g.reset();
 		//Graph.pp(g);
 		return g;
 	}
 	
+	/**
+	 * This method draws the diamond for a given node according to a direction, directions may be redundant for a pair of nodes.
+	 * @param g
+	 * @param node
+	 * @param dir
+	 * @param color
+	 */
 	public static void drawDiamond(Graphics2D g, NodeV node, Node.DIR dir, Color color) {
 		Rectangle2D box = node.getPolygon().getBounds2D();
 		Rectangle2D diamond = new Rectangle();
@@ -266,7 +275,7 @@ public class Utils {
 		nodes.get(t).setLabel(len);
 		nodes.get(t).setIsFixed(true);*/
 
-		Graph g = new Graph(nodes);
+		Graph g = new Graph(nodes, nodes.get(0), nodes.get(len-1));
 		return g;
 	}
 	

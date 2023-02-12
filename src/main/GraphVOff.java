@@ -1,18 +1,36 @@
 package src.main;
+
+import java.awt.Color;
+
 public class GraphVOff extends GraphV {
 	
 	private NodeVOff source, bottom;
 	
-	public GraphVOff(Graph g) {
+	/**
+	 * Generates a graph used in the visualizer but only as a support for map creation, at first we use it as a grid
+	 * then we can extract the toggled/existing/used nodes to create a graph.
+	 * @param g the graph to build.
+	 * @param all_toggled in the generation we can already toggle all nodes in the given graph.
+	 */
+	public GraphVOff(Graph g, boolean all_toggled) {
 		super(g);
-		this.nodes = new NodeVOff[graph.getNodes().size()];
+		this.nodes = new NodeVOff[g.getNodes().size()];
 		
 		for (Node node : graph.getNodes()) {
 			nodes[node.id] = new NodeVOff(node); //false id true id
+			if (all_toggled) ((NodeVOff) nodes[node.id]).toggleOn();
+			if (g.getSource() == node) {
+				setSource((NodeVOff) nodes[node.id]);
+				((NodeVOff) nodes[node.id]).toggleOn();
+			}
+			else if (g.getDestination() == node) {
+				setBottom((NodeVOff) nodes[node.id]);
+				((NodeVOff) nodes[node.id]).toggleOn();
+			}
 		}
 		
 		//we consider the source of the graph to be at the center of the screen
-		nodes[graph.getSource().id].setPosition(0, 0);
+		nodes[g.getSource().id].setPosition(0, 0);
 		//we want to set the position to other cells relative to the source
 		DFS(g.getSource().id);
 	}
@@ -54,6 +72,7 @@ public class GraphVOff extends GraphV {
 		}
 		node.getNode().setLabel(1);
 		node.getNode().setIsFixed(true);
+		node.forceColor(Color.RED);
 		this.graph.setSource(node.getNode());
 		this.source = node;
 	}
@@ -71,6 +90,7 @@ public class GraphVOff extends GraphV {
 		}
 		node.getNode().setLabel(NodeVOff.COUNTER);
 		node.getNode().setIsFixed(true);
+		node.forceColor(Color.GREEN);
 		this.graph.setDestination(node.getNode());
 		this.bottom = node;
 	}
@@ -98,6 +118,7 @@ public class GraphVOff extends GraphV {
     private void DFS_bis_2(int cur, boolean visited[], Node father, Node.DIR dir, Graph exported_graph)
     {
     	NodeV node = this.nodes[cur];
+    	System.out.println("graph source : " + graph.getSource().id + " node " + node.getNode().id);
     	if (!((NodeVOff) node).exists()) return;
     	Node copy = new Node(node.getNode(), i);
     	for (int i = 0; i < 6; i++)
@@ -143,7 +164,7 @@ public class GraphVOff extends GraphV {
         Graph exported_graph = new Graph();
         DFS_bis_2(v, visited, null, null, exported_graph);
         if (exported_graph.getSource() == null || exported_graph.getDestination() == null) {
-        	System.err.println(Visualizer.prefix + "Error, did not find source or destination in exported graph.");
+        	System.err.println(Visualizer.prefix + "Error, did not find source or destination in exported graph.\nThe graph may be not connected.");
         	return null;
         }
         return exported_graph;

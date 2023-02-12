@@ -71,7 +71,7 @@ public class GeneratorDialog extends JDialog {
 					w = Integer.valueOf(widthField.getText());
 					f = Integer.valueOf(fixedField.getText());
 					d = Integer.valueOf(diamsField.getText());
-					graph = Utils.generateHexaMap(w, f, d);
+					graph = Utils.generateHexaMap(w, d, f);
 					dispose();
 				} catch (NumberFormatException e1) {
 					System.err.println(Visualizer.prefix + "Error, input valid numbers.");

@@ -83,7 +83,7 @@ public class Graph {
 				this.getNodes().get(i).setNeighbor(this.getNodes().get(i).getNeighbor(Node.getDirection(j)), Node.getDirection(j));
 			}
 		}
-		Graph.pp(this);
+//		Graph.pp(this);
 	}
 
 

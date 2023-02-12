@@ -36,10 +36,12 @@ public class RikudoPane extends JPanel implements ActionListener, MouseInputList
 	private Rectangle2D button_generate;
 	private Rectangle2D button_check;
 	private Rectangle2D button_solve;
+	private Rectangle2D button_solve2;
 	private boolean load_clicked = false;
 	private boolean generate_clicked = false;
 	private boolean check_clicked = false;
 	private boolean solve_clicked = false;
+	private boolean solve2_clicked = false;
 	private boolean check_solution = false;
 	private boolean is_solved = false;
 	
@@ -49,13 +51,13 @@ public class RikudoPane extends JPanel implements ActionListener, MouseInputList
 	public static final int CELL_HEIGHT = 100;
 	
 	//fields
-	private GraphV graph;
-	private Timer timer;
+	private GraphV graph; //drawn graph in the play mode..
+	private Timer timer; //used to refresh some things
 	
 	//pane related
 	private AffineTransform transform;
-	private BufferedImage pane;
-	private GraphVOff hexagraph;
+	private BufferedImage pane; //the image where we can draw everything
+	private GraphVOff hexagraph; //the hexagraph represents the grid used in the creator mode
 	
 	public RikudoPane(JFrame frame, Visualizer visualizer, GraphV graph) { //should be Rikudo rikudo
 		super();
@@ -70,22 +72,18 @@ public class RikudoPane extends JPanel implements ActionListener, MouseInputList
 		this.button_generate = new Rectangle(WIDTH-150, 70, 100, 30);
 		this.button_check = new Rectangle(WIDTH-180, 30, 150, 30);
 		this.button_solve = new Rectangle(WIDTH-180, 100, 150, 30);
+		this.button_solve2 = new Rectangle(WIDTH-180, 160, 150, 30);
 		
 		this.pane = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
 		Graph hexagraph = Utils.getHexaGraph(7);
-		this.hexagraph = new GraphVOff(hexagraph);
+		this.hexagraph = new GraphVOff(hexagraph, false);
 		
 		this.timer = new Timer(50, this);
 		timer.start();
 	}
 	
 	public void loadCreator(Graph graph, boolean fill) {
-		this.hexagraph = new GraphVOff(graph);	
-		if (fill) {
-			for (NodeV n : this.hexagraph.getNodesV()) {
-				((NodeVOff) n).toggleOn();
-			}
-		}
+		this.hexagraph = new GraphVOff(graph, fill);	
 	}
 	
 	public void loadGraph(Graph g) {
@@ -141,12 +139,22 @@ public class RikudoPane extends JPanel implements ActionListener, MouseInputList
 			if (!solve_clicked) {
 				g.setColor(Color.WHITE);
 			} else g.setColor(Color.RED);
-			g.drawString("Solve puzzle", WIDTH-160, 120);
+			g.drawString("Solve SAT", WIDTH-150, 120);
 			g.setColor(Color.CYAN);
 			g.drawString("Is solvable : " + is_solved, WIDTH-170, 150);
+			
+			//solve2
+			g.setColor(Color.DARK_GRAY);
+			g.fill(button_solve2);
+			if (!solve2_clicked) {
+				g.setColor(Color.WHITE);
+			} else g.setColor(Color.RED);
+			g.drawString("Solve BACKTRACK", WIDTH-179, 175);
+			g.setColor(Color.CYAN);
 
 			g.setColor(Color.BLACK);
 			g.drawString("PLAY MODE", 15, 20);
+			g.drawString("Press M to change mode", 15, 40);
 			
 		} else if (MODE == 1) {//creator mode
 			g.setBackground(Color.GRAY);
@@ -173,6 +181,7 @@ public class RikudoPane extends JPanel implements ActionListener, MouseInputList
 			g.setFont(g.getFont().deriveFont(20f));
 			g.setColor(Color.CYAN);
 			g.drawString("CREATOR MODE", 15, 20);
+			g.drawString("Press M to change mode", 15, 40);
 			
 			//menu
 			//load
@@ -220,6 +229,14 @@ public class RikudoPane extends JPanel implements ActionListener, MouseInputList
 		
 		gg.drawImage(pane, 0, 0, null);
 	}
+	
+	public Point lerp(Point start_value, Point end_value, float t)
+	{
+	    Point p = new Point();
+	    p.x = (int) (start_value.x + (end_value.x - start_value.x) * t);
+	    p.y = (int) (start_value.y + (end_value.y - start_value.y) * t);
+	    return p;
+	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
@@ -228,7 +245,6 @@ public class RikudoPane extends JPanel implements ActionListener, MouseInputList
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		System.out.println(e.getX() + " " + e.getY());
 		if (MODE == 0) {
 			if (e.getButton() == MouseEvent.BUTTON1) {
 				for (NodeV node : graph.getNodesV()) {
@@ -344,9 +360,15 @@ public class RikudoPane extends JPanel implements ActionListener, MouseInputList
 	 */
 	private int drag = 0;
 	private NodeV node1, node2;
+	
+	/*
+	 * Dragging
+	 */
+	private Point cursor;
 
 	@Override
 	public void mousePressed(MouseEvent e) {
+		cursor = e.getPoint();
 		if (RikudoPane.MODE == 1) {
 			if (e.getButton() == MouseEvent.BUTTON1) {
 				try {
@@ -388,15 +410,26 @@ public class RikudoPane extends JPanel implements ActionListener, MouseInputList
 					repaint();
 				}
 				if (button_solve.contains(e.getPoint())) {
+					System.out.println(Visualizer.prefix + "Attempting to solve with SAT.");
 					solve_clicked = true;
 					boolean solved = Algorithm.satSolve(this.graph.getGraph(), true);
+					is_solved = solved;
+					repaint();
+				}
+				if (button_solve2.contains(e.getPoint())) {
+					System.out.println(Visualizer.prefix + "Attempting to solve with BACKTRACK.");
+					solve2_clicked = true;
+					boolean solved = Algorithm.backtrack(this.graph.getGraph(), true);
 					is_solved = solved;
 					repaint();
 				}
 			}
 		}
 	}
-
+	
+	//Dragging
+	public int dx = 0, dy = 0;
+	
 	@Override
 	public void mouseDragged(MouseEvent e) {
 		if (MODE == 1) {
@@ -404,6 +437,12 @@ public class RikudoPane extends JPanel implements ActionListener, MouseInputList
 				drag = 2; //second condition is validated
 			}
 		}
+		dx = e.getX() - (cursor.x);
+		dy = e.getY() - (cursor.y);
+		visualizer.global_x[MODE]+=dx;
+		visualizer.global_y[MODE]+=dy;
+		cursor = e.getPoint();
+		repaint();
 	}
 
 	@Override
@@ -438,6 +477,7 @@ public class RikudoPane extends JPanel implements ActionListener, MouseInputList
 		if (RikudoPane.MODE == 1 && e.getButton() == MouseEvent.BUTTON1 && button_load.contains(e.getPoint()) && load_clicked) load_clicked = false;
 		if (RikudoPane.MODE == 0 && e.getButton() == MouseEvent.BUTTON1 && button_check.contains(e.getPoint()) && check_clicked) check_clicked = false;
 		if (RikudoPane.MODE == 0 && e.getButton() == MouseEvent.BUTTON1 && button_solve.contains(e.getPoint()) && solve_clicked) solve_clicked = false;
+		if (RikudoPane.MODE == 0 && e.getButton() == MouseEvent.BUTTON1 && button_solve2.contains(e.getPoint()) && solve2_clicked) solve2_clicked = false;
 	}
 
 	@Override
