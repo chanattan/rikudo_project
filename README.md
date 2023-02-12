@@ -2,7 +2,7 @@
 
 Hello,
 
-it is the Algorithms 1 class project made by Regaud Gaëtan, Sok Chanattan and Timmerman Juleswhich is about the Rikudo game
+it is the Algorithms 1 class project made by Regaud Gaëtan, Sok Chanattan and Timmerman Jules which is about the Rikudo game
 
 # What is Rikudo ?
 http://www.rikudo.fr/
