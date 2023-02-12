@@ -108,7 +108,7 @@ We created an Hamiltonian circuits.
  
  - Load : it loads the created graph into the play mode.
  
- - Generate : considering the parameters given into the dialog that pops up, it generates an hexagonal graph with the given parameters that has at least one solution. (it might show some problem at the moment, it needs to be fixed)
+ - Generate : considering the parameters given into the dialog that pops up, it generates an hexagonal graph with the given parameters that has at least one solution.
  
  The commands for creation are shown on the panel at the bottom right of the screen,
  you can drag your mouse around to drag the graph.
