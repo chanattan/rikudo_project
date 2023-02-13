@@ -1,6 +1,7 @@
 package src.main;
 
 import java.awt.Color;
+import java.util.ArrayList;
 
 public class GraphVOff extends GraphV {
 	
@@ -115,37 +116,57 @@ public class GraphVOff extends GraphV {
 	/*
 	 * Recursive DFS used in DFS(int v) to create the exported graph.
 	 */
-    private void DFS_bis_2(int cur, boolean visited[], Node father, Node.DIR dir, Graph exported_graph)
+    private void DFS_bis_2(int cur, boolean visited[], Node[] copied, Graph exported_graph)
     {
     	NodeV node = this.nodes[cur];
-    	System.out.println("graph source : " + graph.getSource().id + " node " + node.getNode().id);
-    	if (!((NodeVOff) node).exists()) return;
-    	Node copy = new Node(node.getNode(), i);
-    	for (int i = 0; i < 6; i++)
-    		copy.setNeighbor(null, Node.getDirection(i));
-    	i++;
-    	if (father != null)
-    		Node.linkNodes(father, copy, dir);
+    	if (!((NodeVOff) node).exists()) return; //if the node isn't part of the exported graph
+    	
+    	//we check if we already copied the node or not
+    	Node copy;
+    	if (copied[node.getNode().id] == null) {
+    		copy = new Node(node.getNode(), i);
+    		//we save the copy into the nodes we visited with the id of the original node
+    		//this will allow us to know which node has been worked on already or not
+    		//while keeping track of the copies
+    		copied[node.getNode().id] = copy;
+    		i++; //id increment
+    	} else copy = copied[node.getNode().id];
+    	
+    	visited[node.getNode().id] = true;
+    	
+    	for (int k = 0; k < 6; k++) { //we reset the neighbors of the copy which were neighbors of the original graph
+    		Node neigh = node.getNode().getNeighbor(Node.getDirection(k));
+    		if (neigh != null) {
+	    		Node neigh_copy = copied[neigh.id];
+	    		if (neigh_copy == null) {//if the neighbor has not yet been copied
+	    			copied[neigh.id] = new Node(neigh, i);
+	    			i++; //id increment
+	    			neigh_copy = copied[neigh.id];
+	    		}
+	    		Node.linkNodes(copy, neigh_copy, Node.getDirection(k)); //we link the copied nodes
+    		} else copy.setNeighbor(null, Node.getDirection(k));
+    	}
+    	
+    	/*if (father != null) //the given father should be a node in the exported graph
+    		Node.linkNodes(father, copy, dir);*/
+    	
     	if (graph.getSource() == node.getNode()) {
     		exported_graph.setSource(copy);
     	}
     	else if (graph.getDestination() == node.getNode()) exported_graph.setDestination(copy);
-    	exported_graph.addNode(copy);
     	
-        visited[cur] = true;
-        //for all neighbors of v
+    	exported_graph.addNode(copy);
+
+    	//for all neighbors of the original node node
         int counter = 0;
         
         while (counter < 6) {
         	Node neigh = node.getNode().getNeighbors()[counter];
         	if (neigh != null) {
 	            int next = neigh.id;
-	            if (((NodeVOff) nodes[next]).exists()) {
-		            if (!visited[next]) {
-//		            	exported_graph.
-//			            nodes[next].setPosition(xb, yb);
-			            DFS_bis_2(next, visited, copy, Node.getDirection(counter), exported_graph);
-		            }
+	            if (((NodeVOff) nodes[next]).exists()) { //might save some calls
+	            	if (!visited[next])
+	            		DFS_bis_2(next, visited, copied, exported_graph);
 	            }
         	}
             counter++; //next neighbor
@@ -160,9 +181,10 @@ public class GraphVOff extends GraphV {
     {
         //by default all items are false
     	i=0;
+        Node copied[] = new Node[graph.getNodes().size()];
         boolean visited[] = new boolean[graph.getNodes().size()];
         Graph exported_graph = new Graph();
-        DFS_bis_2(v, visited, null, null, exported_graph);
+        DFS_bis_2(v, visited, copied, exported_graph);
         if (exported_graph.getSource() == null || exported_graph.getDestination() == null) {
         	System.err.println(Visualizer.prefix + "Error, did not find source or destination in exported graph.\nThe graph may be not connected.");
         	return null;

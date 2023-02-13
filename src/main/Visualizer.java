@@ -20,7 +20,7 @@ public class Visualizer extends JFrame implements KeyListener {
     		System.err.println(prefix + "Error, tried to visualize a null graph.");
     		System.exit(1);
     	}
-        this.setTitle("Rikudo Creator JGC v1.0");
+        this.setTitle("Rikudo Creator JGC v1.0.2");
         GraphV g = new GraphV(graph);
         pane = new RikudoPane(this, this, g);
         this.global_x = new int[] {0,0};
