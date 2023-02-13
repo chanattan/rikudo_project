@@ -2,8 +2,7 @@
 
 Hello,
 
-it is the Algorithms 1 class project wihch is about the Rikudo game made by
-Regaud Gaëtan, Sok Chanattan and Timmerman Jules
+it is the Algorithms 1 class project made by Regaud Gaëtan, Sok Chanattan and Timmerman Jules which is about the Rikudo game
 
 # What is Rikudo ?
 http://www.rikudo.fr/
@@ -89,7 +88,8 @@ We created an Hamiltonian circuits.
  We developed a GUI interface with Java using Swing and AWT to draw the hexagon maps and interact with the algorithms.
  You can run it using the command `java -jar RikudoCreatorJGC.jar` in the command line.
  The software first opens in *PLAY MODE* which is where you can play around with one graph.
- In order to switch between the modes you can use the key **M**.
+ In order to switch between the modes you can use the **M** key.
+ You can drag your mouse around to drag the graph.
  
  ## Play Mode
   In this mode, you have several buttons :
@@ -98,7 +98,7 @@ We created an Hamiltonian circuits.
  
  - Solve BACKTRACK : this does the same thing as the Solve SAT but tries to solve the graph using backtracking, the solution might be slow to output on the graph.
  
- - Check Solution : considering that the current graph has been played and thus the nodes have been labelled with the hope of being a solution, then the proposed solution is checked using a verification algorithm, the answer is output in the label : is solution.
+ - Check Solution : considering that the current graph has been played and thus the nodes have been labelled with the hope of being a solution, then the proposed solution is checked using a verification algorithm, the answer is outputted on the label : is solution.
  
  Note that the algorithms may take time to run and the software may freeze in the meantime.
  
@@ -108,20 +108,18 @@ We created an Hamiltonian circuits.
  
  - Load : it loads the created graph into the play mode.
  
- - Generate : considering the parameters given into the dialog that pops up, it generates an hexagonal graph with the given parameters that has at least one solution. (it might show some problem at the moment, it needs to be fixed)
+ - Generate : considering the parameters given into the dialog that pops up, it generates an hexagonal graph with the given parameters that has at least one solution.
  
- The commands for creation are shown on the panel at the bottom right of the screen,
- one command was still not displayed : **Left or Right+Alt click to set source/destination nodes**. The source is red and the destination is green.
+ The commands for creation are shown on the panel at the bottom right of the screen.
  
  ## Extensions/Remaining work
  This section is about the considered extensions and the remaining work that could have been implemented if given more time.
  
  - Fixing the padding in the graph that are drawn to the screen.
- - Fixing Generation and adding more parameters for more complex puzzles.
+ - Adding more parameters for more complex puzzles in the generator.
  - Fixing labelling in the creator mode.
  - Making the software more interactive and easier to use for the user.
  - Implementing loading bars for the running algorithms that could take time.
- - Implementing dragging to move the graph in the software.
  - Making the play mode to be as similar as the rikudo website's but better.
  - Going further in the implementation of the algorithms for them to be resilient to all graphs.
  
