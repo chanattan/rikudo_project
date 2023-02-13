@@ -246,8 +246,8 @@ public class RikudoPane extends JPanel implements ActionListener, MouseInputList
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		if (MODE == 0) {
-			if (e.getButton() == MouseEvent.BUTTON1) {
-				for (NodeV node : graph.getNodesV()) {
+			for (NodeV node : graph.getNodesV()) {
+				if (e.getButton() == MouseEvent.BUTTON1) {
 					if (transform != null) {
 						try {
 							Point2D p = transform.inverseTransform(e.getPoint(), null);
@@ -271,6 +271,18 @@ public class RikudoPane extends JPanel implements ActionListener, MouseInputList
 						} catch (NoninvertibleTransformException e1) {
 							e1.printStackTrace();
 						}
+					}
+				}
+
+				if (e.getButton() == MouseEvent.BUTTON3) { //delete label
+					Point2D p;
+					try {
+						p = transform.inverseTransform(e.getPoint(), null);
+						if (node.isHovered(p) && node.getNode().getLabel() != -1) {
+							node.getNode().setLabel(-1);
+						}
+					} catch (NoninvertibleTransformException e1) {
+						e1.printStackTrace();
 					}
 				}
 			}
