@@ -101,6 +101,9 @@ We created an Hamiltonian circuits.
  - Check Solution : considering that the current graph has been played and thus the nodes have been labelled with the hope of being a solution, then the proposed solution is checked using a verification algorithm, the answer is outputted on the label : is solution.
  
  Note that the algorithms may take time to run and the software may freeze in the meantime.
+ The labelling of a node is done according to its neighbors' labels or otherwise all values are possible, this allows a smarter way to play,
+ Left+Ctrl click to decrement and Left click to increment, Right click to delete the label, please refer to the creator mode if you want
+ all the list of all possible commands as some of them are available in play mode.
  
  ## Creator Mode
  In this mode, you can create your own puzzle (map) to try them on the play mode.
@@ -108,15 +111,17 @@ We created an Hamiltonian circuits.
  
  - Load : it loads the created graph into the play mode.
  
- - Generate : considering the parameters given into the dialog that pops up, it generates an hexagonal graph with the given parameters that has at least one solution.
+ - Generate : considering the parameters given into the dialog that pops up, it generates an hexagonal graph with the given parameters that has at least one solution. (the current implementation is slow and might have some problem sometimes with the label of the fixed nodes and the location of the destination,
+ it might work in most cases and is still in work)
  
- The commands for creation are shown on the panel at the bottom right of the screen.
+ The commands for creation are shown on the panel at the bottom right of the screen. Note that the commands to label nodes are similar
+ in the play mode.
  
  ## Extensions/Remaining work
  This section is about the considered extensions and the remaining work that could have been implemented if given more time.
  
  - Fixing the padding in the graph that are drawn to the screen.
- - Adding more parameters for more complex puzzles in the generator.
+ - Adding more parameters for more complex puzzles in the generator and fixing it for all cases (todo with more time).
  - Fixing labelling in the creator mode.
  - Making the software more interactive and easier to use for the user.
  - Implementing loading bars for the running algorithms that could take time.
